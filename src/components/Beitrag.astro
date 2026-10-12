@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../site.config.js';
+import { allReviews, renderArticle, renderLegacy, buyLink, buyLabel, formatDate, typeOf, urlOf, relatedReviews, alsoBlock, insertBeforeFazit, rechnerFor, isoZeit } from '../lib/reviews.js';
+
+const { review } = Astro.props;
+const t = typeOf(review);
+const alle = allReviews();
+const html = insertBeforeFazit(review.legacy ? renderLegacy(review.raw, review) : renderArticle(review.raw, review), alsoBlock(review, alle));
+const related = relatedReviews(review, alle);
+const rechner = null;
+const link = buyLink(review);
+const path = urlOf(review);
+const hasScore = review.score > 0;
+const showAside = Boolean(link || hasScore);
+const person = { '@type': 'Person', name: site.author.name, description: site.author.bio, image: site.url + site.author.image, url: site.url };
+const iso = (s) => `PT${Math.floor(s / 60)}M${s % 60}S`;
+const video = review.videoId
+  ? {
+      '@type': 'VideoObject',
+      name: review.title,
+      description: review.excerpt,
+      thumbnailUrl: site.url + review.image,
+      uploadDate: isoZeit(review),
+      ...(review.videoDuration ? { duration: iso(review.videoDuration) } : {}),
+      embedUrl: `https://www.youtube-nocookie.com/embed/${review.videoId}`,
+      contentUrl: `https://www.youtube.com/watch?v=${review.videoId}`,
+    }
+  : null;
+const product = hasScore && review.productName
+  ? {
+      '@type': 'Product',
+      name: review.productName,
+      ...(review.brand ? { brand: { '@type': 'Brand', name: review.brand } } : {}),
+      image: site.url + review.image,
+      ...(review.excerpt ? { description: review.excerpt } : {}),
+      review: {
+        '@type': 'Review',
+        name: review.title,
+        ...(review.excerpt ? { reviewBody: review.excerpt } : {}),
+        datePublished: isoZeit(review),
+        author: person,
+        publisher: { '@type': 'Organization', name: site.name, url: site.url },
+        reviewRating: { '@type': 'Rating', ratingValue: review.score, bestRating: 100, worstRating: 0 },
+        ...(review.pros.length ? { positiveNotes: { '@type': 'ItemList', itemListElement: review.pros.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p })) } } : {}),
+        ...(review.cons.length ? { negativeNotes: { '@type': 'ItemList', itemListElement: review.cons.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p })) } } : {}),
+      },
+    }
+  : { '@type': 'Article', headline: review.title, datePublished: isoZeit(review), image: site.url + review.image, author: person, publisher: { '@type': 'Organization', name: site.name, url: site.url } };
+const jsonld = { '@context': 'https://schema.org', '@graph': [product, ...(video ? [video] : [])] };
+---
+<Base title={review.title} description={review.excerpt} image={review.image} path={path} type="article" jsonld={jsonld}>
+  <section class="se-pagehead">
+    <div class="se-wrap">
+      <nav class="se-crumbs" aria-label="Brotkrumen">
+        <a href="/">Startseite</a><span aria-hidden="true">/</span>
+        <a href={`/${t.base}/`}>{t.plural}</a><span aria-hidden="true">/</span>
+        {review.category && <Fragment><a href={`/kategorie/${review.category.slug}/`}>{review.category.name}</a><span aria-hidden="true">/</span></Fragment>}
+        <span>{review.productName || review.title}</span>
+      </nav>
+      <h1>{review.title}</h1>
+      <div class="se-meta"><span>Von {site.author.name}</span><span>Veröffentlicht am {formatDate(review.published)}</span></div>
+    </div>
+  </section>
+
+  <div class={`se-wrap se-review${showAside ? '' : ' se-review-single'}`}>
+    <div class="se-review-main">
+      {review.videoId ? (
+        <Fragment>
+          <div class="se-video" data-video={review.videoId} data-title={review.title}>
+            <img src={review.image} alt={`Video: ${review.productName || review.title}`} width="1280" height="720" />
+            <button class="se-video-play" type="button" aria-label="Video abspielen">
+              <span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>Video ansehen</span>
+            </button>
+          </div>
+          <p class="se-video-hint">Beim Abspielen wird das Video von YouTube geladen.</p>
+        </Fragment>
+      ) : (
+        <img class="se-lead-img" src={review.image} alt={review.productName || review.title} width="1280" height="720" />
+      )}
+      <article class="se-article" set:html={html} />
+      {(related.length > 0 || rechner) && (
+        <section class="se-related" aria-labelledby="se-related-head">
+          <h2 id="se-related-head">Passende Tests und Checks</h2>
+          {related.length > 0 && (
+            <div class="se-related-grid">
+              {related.map((r) => (
+                <a class="se-related-card" href={urlOf(r)}>
+                  <img src={r.imageSmall || r.image} alt="" width="640" height="360" loading="lazy" />
+                  <span class="se-related-type">{typeOf(r).label}</span>
+                  <strong>{r.productName || r.title}</strong>
+                </a>
+              ))}
+            </div>
+          )}
+          {rechner && (
+            <a class="se-related-calc" href={`/tools/${rechner.slug}/`}>
+              <span>Passender Rechner</span>
+              <strong>{rechner.name}</strong>
+              <em>{rechner.kurz}</em>
+            </a>
+          )}
+        </section>
+      )}
+      <section class="se-author" aria-label="Über den Autor">
+        <img src={site.author.image} alt={site.author.name} width="96" height="96" loading="lazy" />
+        <div>
+          <span class="se-author-label">Über den Autor</span>
+          <strong>{site.author.name}</strong>
+          <p>{site.author.bio}</p>
+        </div>
+      </section>
+    </div>
+
+    {showAside && (
+      <aside class="se-aside" aria-label="Kaufbox">
+        <img src={review.imageSmall || review.image} alt="" width="640" height="360" loading="lazy" />
+        <div>
+          <div class="se-aside-name">{review.productName}</div>
+          {review.brand && <div class="se-aside-sub">{review.brand}</div>}
+        </div>
+        {hasScore && <div class="se-aside-score"><span>Gesamtbewertung</span><strong>{review.score}/100</strong></div>}
+        {link && <a class="se-btn" href={link} target="_blank" rel="nofollow sponsored noopener">{buyLabel(review)}</a>}
+        {link && <span class="se-aside-note">Partnerlink: Kaufst du darüber ein, erhalten wir eine kleine Provision.</span>}
+      </aside>
+    )}
+  </div>
+</Base>

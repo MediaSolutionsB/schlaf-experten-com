@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import Card from '../../lib/Card.astro';
+import { site } from '../../site.config.js';
+import { allReviews } from '../../lib/reviews.js';
+
+export function getStaticPaths() {
+  return site.categories.map((c) => ({ params: { slug: c.slug }, props: { category: c } }));
+}
+const { category } = Astro.props;
+const reviews = allReviews().filter((r) => r.category && r.category.slug === category.slug);
+---
+<Base title={`${category.name}: Tests & Ratgeber – ${site.name}`} description={`Alle Tests und Ratgeber zu ${category.name}: ${category.text}.`} path={`/kategorie/${category.slug}/`} noindex={reviews.length === 0}>
+  <section class="se-pagehead">
+    <div class="se-wrap">
+      <nav class="se-crumbs" aria-label="Brotkrumen"><a href="/">Startseite</a><span aria-hidden="true">/</span><span>{category.name}</span></nav>
+      <h1>{category.name}</h1>
+      <p>{category.text}</p>
+    </div>
+  </section>
+  <section class="se-wrap se-section">
+    {reviews.length
+      ? <div class="se-cards">{reviews.map((r) => <Card review={r} />)}</div>
+      : <div class="se-empty">Hier erscheinen bald die ersten Beiträge.</div>}
+  </section>
+</Base>

@@ -2,33 +2,18 @@
 import Base from '../layouts/Base.astro';
 import { site } from '../site.config.js';
 import { icons, arrow } from '../lib/icons.js';
+import { allReviews, urlOf, typeOf } from '../lib/reviews.js';
 
 const title = 'Schlaf-Experten – Das Portal für gesunden Schlaf & Ergonomie';
 const description = 'Unabhängige Tests, fundierte Kaufberatung zu Matratzen, Boxspringbetten & Schlafsofas sowie Schlaf-Services vor Ort.';
 
-const featuredArticles = [
-  {
-    title: 'Bruno Boxspringbett Test: Lohnt sich der Kauf?',
-    desc: 'Erfahrungsbericht, Aufbau, Liegegefühl und 100-Nächte-Probezeit im genauen Praxistest.',
-    url: '/betten/bruno-boxspringbett/',
-    image: '/bilder/beitraege/brunobett-boxspringbett.jpg',
-    category: 'Boxspringbetten'
-  },
-  {
-    title: 'Bruno Schlafsofa Test: Lohnt sich der Kauf?',
-    desc: 'Praxistest der beliebten Schlafcouch: Verwandlung, Sitzkomfort und Schlafqualität für Gäste.',
-    url: '/betten/bruno-schlafsofa/',
-    image: '/bilder/beitraege/Bruno-Schlafsofa-testbericht.jpg',
-    category: 'Schlafsofas'
-  },
-  {
-    title: 'Kipli Naturlatex Matratze: Erfahrungen & Test',
-    desc: 'Härtetest der 100% Naturlatex-Matratze: Ergonomie, zwei Liegeseiten, Geruch und Ökobilanz.',
-    url: '/matratzen/kipli-erfahrungen-test/',
-    image: '/bilder/beitraege/Kipli-Test.jpg',
-    category: 'Matratzen'
-  }
-];
+const featuredArticles = allReviews().slice(0, 6).map((r) => ({
+  title: r.title,
+  desc: r.excerpt,
+  url: urlOf(r),
+  image: r.imageSmall || r.image,
+  category: (r.category && r.category.name) || typeOf(r).label,
+}));
 
 const jsonld = {
   '@context': 'https://schema.org',
@@ -66,7 +51,7 @@ const jsonld = {
         </div>
         <div class="se-usp-item">
           <span class="se-usp-title">Persönliche Betreuung</span>
-          <span class="se-usp-desc">Schlaflabor, Schlaf-Coaching &amp; Vor-Ort-Kaufberatung im Raum Stuttgart &amp; Waiblingen.</span>
+          <span class="se-usp-desc">Schlafanalyse, Schlaf-Coaching &amp; Vor-Ort-Kaufberatung im Raum Stuttgart &amp; Waiblingen.</span>
         </div>
       </div>
     </div>
@@ -112,7 +97,7 @@ const jsonld = {
             </div>
             <h3>{c.name}</h3>
             <p>{c.text}</p>
-            <a class="se-cat-link" href="#beitraege">
+            <a class="se-cat-link" href={`/kategorie/${c.slug}/`}>
               Artikel ansehen <Fragment set:html={arrow} />
             </a>
           </div>

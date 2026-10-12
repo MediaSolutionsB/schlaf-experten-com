@@ -1,0 +1,11 @@
+---
+import Beitrag from '../../components/Beitrag.astro';
+import { allReviews, typeOf } from '../../lib/reviews.js';
+
+// Neue Beiträge aus dem YT-Tool: /test/…, /check/…
+export function getStaticPaths() {
+  return allReviews().filter((r) => !r.path).map((r) => ({ params: { base: typeOf(r).base, slug: r.slug }, props: { review: r } }));
+}
+const { review } = Astro.props;
+---
+<Beitrag review={review} />

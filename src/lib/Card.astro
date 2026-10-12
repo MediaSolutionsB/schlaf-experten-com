@@ -1,0 +1,18 @@
+---
+import { arrow } from './icons.js';
+import { typeOf, urlOf } from './reviews.js';
+const { review } = Astro.props;
+const t = typeOf(review);
+---
+<a class="se-card" href={urlOf(review)}>
+  <img src={review.imageSmall || review.image} alt={review.productName || review.title} width="640" height="360" loading="lazy" />
+  <div class="se-card-body">
+    <div class="se-card-top">
+      <span class="se-eyebrow">{t.label}{review.category ? ` · ${review.category.name}` : ''}</span>
+      {review.score > 0 && <span class="se-pill">{review.score}/100</span>}
+    </div>
+    <div class="se-card-title">{review.title}</div>
+    <div class="se-card-text">{review.excerpt}</div>
+    <div class="se-card-more">{t.more} <Fragment set:html={arrow} /></div>
+  </div>
+</a>

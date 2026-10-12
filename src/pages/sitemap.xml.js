@@ -1,14 +1,15 @@
 import { site } from '../site.config.js';
+import { allReviews, urlOf } from '../lib/reviews.js';
 
 export async function GET() {
   const pages = [
     '',
     'schlaf-services/',
-    'betten/bruno-boxspringbett/',
-    'betten/bruno-schlafsofa/',
-    'matratzen/kipli-erfahrungen-test/',
-    'betten/impressum/',
+    'impressum/',
     'datenschutzerklaerung/',
+    ...site.categories.filter((c) => allReviews().some((r) => r.category && r.category.slug === c.slug)).map((c) => `kategorie/${c.slug}/`),
+    ...[...new Set(allReviews().map((r) => r.type))].map((k) => `${site.types[k].base}/`),
+    ...allReviews().map((r) => urlOf(r).replace(/^\//, '')),
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

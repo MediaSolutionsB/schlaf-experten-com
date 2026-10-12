@@ -66,7 +66,7 @@ const year = new Date().getFullYear();
             <span class="se-footer-head">Vor Ort</span>
             <div class="se-footer-links">
               <a href="/schlaf-services/">Schlaf-Services Übersicht</a>
-              <a href="/schlaf-services/#schlaflabor">Schlaflabor &amp; Analyse</a>
+              <a href="/schlaf-services/#schlafanalyse">Schlafanalyse &amp; Beratung</a>
               <a href="/schlaf-services/#schlafcoaching">Schlaf-Coaching</a>
               <a href="/schlaf-services/#workshops">Workshops</a>
               <a href="/schlaf-services/#kaufberatung">Matratzen-Kaufberatung</a>
@@ -75,7 +75,7 @@ const year = new Date().getFullYear();
           <div>
             <span class="se-footer-head">Rechtliches</span>
             <div class="se-footer-links">
-              <a href="/betten/impressum/">Impressum</a>
+              <a href="/impressum/">Impressum</a>
               <a href="/datenschutzerklaerung/">Datenschutzerklärung</a>
             </div>
           </div>
@@ -85,5 +85,20 @@ const year = new Date().getFullYear();
         </div>
       </div>
     </footer>
+    <script is:inline>
+      // YouTube erst nach Klick laden (vorher keine Verbindung zu YouTube)
+      document.addEventListener('click', function (e) {
+        var b = e.target.closest('.se-video-play');
+        if (!b) return;
+        var box = b.closest('.se-video');
+        var f = document.createElement('iframe');
+        f.src = 'https://www.youtube-nocookie.com/embed/' + box.dataset.video + '?autoplay=1&rel=0';
+        f.title = box.dataset.title || 'Video';
+        f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        f.allowFullscreen = true;
+        box.innerHTML = '';
+        box.appendChild(f);
+      });
+    </script>
   </body>
 </html>

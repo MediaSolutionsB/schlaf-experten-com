@@ -1,0 +1,11 @@
+---
+import Beitrag from '../components/Beitrag.astro';
+import { allReviews } from '../lib/reviews.js';
+
+// Alte Beiträge aus WordPress behalten ihre bisherige Adresse.
+export function getStaticPaths() {
+  return allReviews().filter((r) => r.path).map((r) => ({ params: { pfad: r.path.replace(/^\/|\/$/g, '') }, props: { review: r } }));
+}
+const { review } = Astro.props;
+---
+<Beitrag review={review} />

@@ -1,4 +1,5 @@
 User-agent: *
+Disallow: /beitraege.json
 Allow: /
 
 Sitemap: https://schlaf-experten.com/sitemap.xml

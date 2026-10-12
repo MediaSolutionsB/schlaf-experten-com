@@ -9,16 +9,16 @@ const mail = (subject) => `mailto:${sv.email}?subject=${encodeURIComponent(subje
 
 const serviceList = [
   {
-    id: 'schlaflabor',
-    tag: 'Diagnose & Analyse',
-    title: '1. Schlaflabor für Diagnose von Schlafproblemen',
-    text: 'Du wachst morgens gerädert auf, leidest unter chronischen Durchschlafproblemen oder vermutest Atemaussetzer (Schlafapnoe)? In unserem Schlaflabor erfassen wir deine Schlafqualität wissenschaftlich fundiert.',
+    id: 'schlafanalyse',
+    tag: 'Analyse & Beratung',
+    title: '1. Schlafanalyse und Beratung',
+    text: 'Du wachst morgens gerädert auf oder schläfst schlecht durch? Wir schauen uns gemeinsam deine Schlafgewohnheiten, dein Schlafumfeld und deinen Tagesablauf an und zeigen dir, was du verbessern kannst. Bei Verdacht auf eine Schlafstörung wie Schlafapnoe empfehlen wir dir den Weg zum Arzt.',
     points: [
-      'Messung von Tiefschlaf-, REM- und Leichtschlafphasen',
-      'Erfassung von Sauerstoffsättigung, Atemmustern & Puls',
-      'Detaillierte Auswertung & ärztlich fundierte Handlungsempfehlungen'
+      'Auswertung deiner Schlafgewohnheiten und deines Schlafumfelds',
+      'Blick auf Bett, Matratze, Kissen, Licht und Raumklima',
+      'Verständliche Auswertung und konkrete Tipps für den Alltag'
     ],
-    icon: icons.lab
+    icon: icons.check
   },
   {
     id: 'schlafcoaching',
@@ -35,11 +35,11 @@ const serviceList = [
   {
     id: 'workshops',
     tag: 'Wissen & Prävention',
-    title: '3. Workshops über Schlafgesundheit & Krankheitsprävention',
-    text: 'Was bewirkt guter Schlaf für das Gehirn und das Immunsystem? Und welche schwerwiegenden Krankheiten (wie Bluthochdruck, Übergewicht oder Burnout) sind direkt auf Schlafmangel zurückzuführen? Interaktive Workshops für Unternehmen und Interessierte.',
+    title: '3. Workshops über gesunden Schlaf',
+    text: 'Was bewirkt guter Schlaf für das Gehirn und das Immunsystem? Und wie hängen Schlaf, Leistungsfähigkeit und Wohlbefinden zusammen? Interaktive Workshops für Unternehmen und Interessierte.',
     points: [
       'Wissenschaftliche Zusammenhänge verständlich und lebendig erklärt',
-      'Prävention von Herz-Kreislauf-Erkrankungen und chronischer Erschöpfung',
+      'Praktische Tipps für mehr Erholung im Alltag',
       'Ideal für betriebliches Gesundheitsmanagement (BGM) und Teams'
     ],
     icon: icons.heart
@@ -59,9 +59,9 @@ const serviceList = [
 ];
 
 const steps = [
-  { n: '1', title: 'Unverbindlich anfragen', text: 'Nenne uns kurz, welcher Service dich interessiert (Schlaflabor, Coaching, Workshop oder Kaufberatung).' },
+  { n: '1', title: 'Unverbindlich anfragen', text: 'Nenne uns kurz, welcher Service dich interessiert (Schlafanalyse, Coaching, Workshop oder Kaufberatung).' },
   { n: '2', title: 'Kostenloses Erstgespräch', text: 'Wir besprechen kurz deine Wünsche oder Symptome und vereinbaren einen passenden Termin vor Ort.' },
-  { n: '3', title: 'Persönliche Betreuung', text: 'Ob Messung im Schlaflabor, 1:1 Coaching oder Probeliegen: Du erhältst maximale Expertise für deinen gesunden Schlaf.' },
+  { n: '3', title: 'Persönliche Betreuung', text: 'Ob Schlafanalyse, 1:1 Coaching oder Probeliegen: Du erhältst maximale Expertise für deinen gesunden Schlaf.' },
 ];
 
 const jsonld = {
@@ -69,7 +69,7 @@ const jsonld = {
   '@type': 'MedicalBusiness',
   '@id': pageUrl + '#betrieb',
   name: 'Schlaf-Experten – Zentrum für Schlafgesundheit & Ergonomie',
-  description: 'Schlaf-Services vor Ort in Stuttgart und im Rems-Murr-Kreis: Schlaflabor, Schlaf-Coaching, Workshops und Matratzen-Kaufberatung.',
+  description: 'Schlaf-Services vor Ort in Stuttgart und im Rems-Murr-Kreis: Schlafanalyse und Beratung, Schlaf-Coaching, Workshops und Matratzen-Kaufberatung.',
   url: pageUrl,
   telephone: sv.phoneLink,
   email: sv.email,
@@ -93,8 +93,8 @@ const jsonld = {
 };
 ---
 <Base
-  title="Schlaf-Services: Schlaflabor, Coaching & Matratzen-Kaufberatung - Schlaf-Experten"
-  description="Professionelle Schlaf-Services vor Ort in Stuttgart & Waiblingen: Schlaflabor für Diagnose von Schlafproblemen, Schlaf-Coaching, Gesundheits-Workshops & Matratzenberatung."
+  title="Schlaf-Services: Schlafanalyse, Coaching & Matratzen-Kaufberatung - Schlaf-Experten"
+  description="Professionelle Schlaf-Services vor Ort in Stuttgart & Waiblingen: Schlafanalyse und Beratung, Schlaf-Coaching, Workshops & Matratzenberatung."
   path="/schlaf-services/"
   jsonld={jsonld}
 >
@@ -103,7 +103,7 @@ const jsonld = {
     <div class="se-wrap">
       <span class="se-hero-badge">Vor Ort in {sv.areas.join(' & im ')}</span>
       <h1>Schlaf-Services: Wissenschaftlich fundiert zu gesundem Schlaf.</h1>
-      <p>Von der präzisen Schlaflabor-Diagnose über persönliches Coaching bis zur ergonomischen Matratzen-Kaufberatung und Workshops – alles aus einer Hand.</p>
+      <p>Von der Schlafanalyse und Beratung über persönliches Coaching bis zur ergonomischen Matratzen-Kaufberatung und Workshops – alles aus einer Hand.</p>
       <div class="se-hero-actions">
         <a class="se-btn" href="#anfrage">Termin anfragen <Fragment set:html={arrow} /></a>
         <a class="se-btn se-btn-ghost se-btn-on-dark" href={`tel:${sv.phoneLink}`}>Direkt anrufen: {sv.phone}</a>

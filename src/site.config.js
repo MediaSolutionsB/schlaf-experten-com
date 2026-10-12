@@ -5,7 +5,7 @@ export const site = {
   url: 'https://schlaf-experten.com',
   lang: 'de',
   tagline: 'Das Portal für gesunden Schlaf – Unabhängige Matratzen-Tests, Schlafberatung und Expertenwissen.',
-  amazonTag: 'schlaf-experten-21',
+  amazonTag: 'sl33p-21',
   service: {
     email: 'info@schlaf-experten.com',
     phone: '0711 25266369',
@@ -16,14 +16,14 @@ export const site = {
     areas: ['Stuttgart', 'Rems-Murr-Kreis'],
   },
   author: {
-    name: 'Tobias Bantle',
+    name: 'Jakob Wagner',
     image: '/bilder/schlaf-experten-icon.png',
-    bio: 'Schlafexperte und zertifizierter Berater für Ergonomie, Schlafgesundheit und Bettsysteme.',
+    bio: 'Schreibt auf schlaf-experten.com über Matratzen, Bettdecken, Kissen und alles, was mit gesundem Schlaf zu tun hat.',
   },
   types: {
-    test: { base: 'test', label: 'Test', plural: 'Tests', more: 'Zum Test', intro: 'Ausführliche Praxistests und Laborbewertungen.' },
-    erfahrung: { base: 'erfahrungen', label: 'Erfahrungsbericht', plural: 'Erfahrungen', more: 'Zum Erfahrungsbericht', intro: 'Echte Langzeiterfahrungen aus dem Alltag.' },
-    ratgeber: { base: 'ratgeber', label: 'Ratgeber', plural: 'Ratgeber', more: 'Zum Ratgeber', intro: 'Wissenschaftlich fundiertes Wissen für erholsamen Schlaf.' },
+    test: { base: 'test', label: 'Test', plural: 'Tests', more: 'Zum Test', intro: 'Ausführliche Praxistests mit ehrlicher Bewertung.' },
+    check: { base: 'check', label: 'Check', plural: 'Checks', more: 'Zum Check', intro: 'Kurze Produkt-Checks mit unserer Einschätzung.' },
+    info: { base: 'ratgeber', label: 'Ratgeber', plural: 'Ratgeber', more: 'Zum Ratgeber', intro: 'Verständliches Wissen für erholsamen Schlaf.' },
   },
   categories: [
     { slug: 'matratzen', name: 'Matratzen', text: 'Kaltschaum-, Federkern-, Latex- & Naturmatratzen im Härtetest', icon: 'mattress' },
@@ -33,24 +33,24 @@ export const site = {
   ],
   services: [
     {
-      id: 'schlaflabor',
-      tag: 'Diagnose',
-      title: 'Schlaflabor für Diagnose von Schlafproblemen',
-      text: 'Gezielte Schlafanalyse bei Ein- und Durchschlafstörungen, Schnarchen oder ständiger Tagesmüdigkeit. Wir erfassen deine Schlafphasen, Sauerstoffsättigung und Bewegungsmuster für eine fundierte Auswertung.',
-      points: ['Messung von Schlafarchitektur & Schlafphasen', 'Analyse von nächtlichen Atemaussetzern und Unruhe', 'Ausführlicher Befund und konkrete Handlungsempfehlungen']
+      id: 'schlafanalyse',
+      tag: 'Analyse & Beratung',
+      title: 'Schlafanalyse und Beratung',
+      text: 'Wir schauen uns deine Schlafgewohnheiten, dein Schlafumfeld und deinen Tagesablauf an und zeigen dir, was du für besseren Schlaf tun kannst. Bei Verdacht auf eine Schlafstörung empfehlen wir dir den Weg zum Arzt.',
+      points: ['Auswertung deiner Schlafgewohnheiten', 'Blick auf Bett, Matratze, Kissen und Schlafumfeld', 'Verständliche Auswertung und konkrete Tipps']
     },
     {
       id: 'schlafcoaching',
       tag: 'Coaching',
       title: 'Schlaf-Coaching für besseres Ein- und Durchschlafen',
-      text: 'Persönliche Begleitung, um deine Schlafhygiene zu optimieren, Stress abzubauen und wieder zu erholsamem Schlaf zu finden. Wissenschaftlich fundierte Methoden statt Schlaftabletten.',
+      text: 'Persönliche Begleitung, um deine Schlafhygiene zu optimieren, Stress abzubauen und wieder zu erholsamem Schlaf zu finden. Praktische Methoden für erholsamen Schlaf.',
       points: ['Individuelle Analyse deiner Schlafgewohnheiten', 'Gezielte Methoden gegen Gedankenkreisen und Einschlafprobleme', 'Feste Routinen für langfristig tiefen und ruhigen Schlaf']
     },
     {
       id: 'workshops',
       tag: 'Wissen & Prävention',
       title: 'Workshops über Schlafgesundheit & Prävention',
-      text: 'Spannende Seminare und Workshops für Firmen und Privatpersonen: Was bewirkt guter Schlaf für Immunsystem und Gehirn? Welche Krankheiten entstehen durch chronischen Schlafmangel? Mit praxiserprobten Strategien.',
+      text: 'Spannende Seminare und Workshops für Firmen und Privatpersonen: Was bewirkt guter Schlaf für Immunsystem und Gehirn? Wie hängen Schlaf und Leistungsfähigkeit zusammen? Mit praxiserprobten Strategien.',
       points: ['Zusammenhänge zwischen Schlaf, Immunsystem & Herz-Kreislauf', 'Faktoren für maximale Regeneration & Leistungsfähigkeit', 'Für Unternehmen (BGM) und gesundheitsbewusste Gruppen']
     },
     {
