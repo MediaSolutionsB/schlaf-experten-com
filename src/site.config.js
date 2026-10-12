@@ -17,7 +17,7 @@ export const site = {
   },
   author: {
     name: 'Jakob Wagner',
-    image: '/bilder/schlaf-experten-icon.png',
+    image: '/bilder/jakob-wagner.webp',
     bio: 'Schreibt auf schlaf-experten.com über Matratzen, Bettdecken, Kissen und alles, was mit gesundem Schlaf zu tun hat.',
   },
   types: {
