@@ -146,6 +146,8 @@ export function renderArticle(raw, meta) {
   const hold = (b) => `\n\n%%EM${blocks.push(b) - 1}%%\n\n`;
 
   html = html.replace(/\[colorframe\]([\s\S]*?)\[\/colorframe\]/gi, (m, inner) => hold(buyBlock(inner, meta)));
+  // YouTube-Video: erst nach Klick laden
+  html = html.replace(/\[youtube id="([\w-]{11})"\]/g, (m, id) => hold(`<div class="se-video se-video-inline" data-video="${id}" data-title="Video"><button class="se-video-play" type="button" aria-label="Video abspielen"><span>Video ansehen</span></button></div><p class="se-video-hint">Beim Abspielen wird das Video von YouTube geladen.</p>`));
   html = html.replace(/\[su_table[^\]]*\]\s*([\s\S]*?)\s*\[\/su_table\]/gi, (m, inner) => hold(tableBlock(inner)));
   html = html.replace(/<table[\s\S]*?<\/table>/gi, (m) => hold(tableBlock(m)));
   html = html.replace(/<figure[^>]*>([\s\S]*?)<\/figure>/gi, (m, inner) => hold(figureBlock(inner)));

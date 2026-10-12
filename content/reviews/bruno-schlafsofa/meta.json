@@ -10,6 +10,8 @@
   "image": "/bilder/beitraege/Bruno-Schlafsofa-testbericht.jpg",
   "imageSmall": "/bilder/beitraege/Bruno-Schlafsofa-testbericht.jpg",
   "excerpt": "Praxistest der beliebten Schlafcouch: Verwandlung, Sitzkomfort und Schlafqualität für Gäste.",
-  "legacy": true,
-  "path": "/betten/bruno-schlafsofa/"
+  "legacy": false,
+  "path": "/betten/bruno-schlafsofa/",
+  "kaufLink": "https://www.brunobett.de/schlafsofa?pno=177850",
+  "shop": "Bruno"
 }

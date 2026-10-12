@@ -10,6 +10,8 @@
   "image": "/bilder/beitraege/Kipli-Test.jpg",
   "imageSmall": "/bilder/beitraege/Kipli-Test.jpg",
   "excerpt": "Die Naturlatex-Matratze im Test: Ergonomie, zwei Liegeseiten, Geruch und Ökobilanz.",
-  "legacy": true,
-  "path": "/matratzen/kipli-erfahrungen-test/"
+  "legacy": false,
+  "path": "/matratzen/kipli-erfahrungen-test/",
+  "kaufLink": "https://kipli.com/de/?ref=tobiasbantle1",
+  "shop": "Kipli"
 }

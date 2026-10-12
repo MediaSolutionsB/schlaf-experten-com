@@ -10,6 +10,8 @@
   "image": "/bilder/beitraege/brunobett-boxspringbett.jpg",
   "imageSmall": "/bilder/beitraege/brunobett-boxspringbett.jpg",
   "excerpt": "Erfahrungsbericht, Aufbau, Liegegefühl und 100-Nächte-Probezeit im genauen Praxistest.",
-  "legacy": true,
-  "path": "/betten/bruno-boxspringbett/"
+  "legacy": false,
+  "path": "/betten/bruno-boxspringbett/",
+  "kaufLink": "https://www.brunobett.de/boxspringbett?pno=177850",
+  "shop": "Bruno"
 }
