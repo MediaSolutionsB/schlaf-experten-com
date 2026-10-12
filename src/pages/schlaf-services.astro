@@ -1,0 +1,204 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../site.config.js';
+import { arrow, icons } from '../lib/icons.js';
+
+const sv = site.service;
+const pageUrl = site.url + '/schlaf-services/';
+const mail = (subject) => `mailto:${sv.email}?subject=${encodeURIComponent(subject)}`;
+
+const serviceList = [
+  {
+    id: 'schlaflabor',
+    tag: 'Diagnose & Analyse',
+    title: '1. Schlaflabor für Diagnose von Schlafproblemen',
+    text: 'Du wachst morgens gerädert auf, leidest unter chronischen Durchschlafproblemen oder vermutest Atemaussetzer (Schlafapnoe)? In unserem Schlaflabor erfassen wir deine Schlafqualität wissenschaftlich fundiert.',
+    points: [
+      'Messung von Tiefschlaf-, REM- und Leichtschlafphasen',
+      'Erfassung von Sauerstoffsättigung, Atemmustern & Puls',
+      'Detaillierte Auswertung & ärztlich fundierte Handlungsempfehlungen'
+    ],
+    icon: icons.lab
+  },
+  {
+    id: 'schlafcoaching',
+    tag: 'Individuelles Coaching',
+    title: '2. Schlaf-Coaching für besseres Ein- und Durchschlafen',
+    text: 'Gedankenkreisen am Abend, unruhiger Schlaf oder ständiges Aufwachen zwischen 3 und 4 Uhr morgens? Unser 1:1 Schlaf-Coaching hilft dir, mentale und körperliche Blockaden nachhaltig aufzulösen.',
+    points: [
+      'Analyse deines Tagesrhythmus, Lichteinflusses & Schlafumfelds',
+      'Gezielte Entspannungstechniken & Routinen gegen nächtliches Grübeln',
+      'Praktischer Schritt-für-Schritt-Plan für dauerhaft tiefen, erholsamen Schlaf'
+    ],
+    icon: icons.moon
+  },
+  {
+    id: 'workshops',
+    tag: 'Wissen & Prävention',
+    title: '3. Workshops über Schlafgesundheit & Krankheitsprävention',
+    text: 'Was bewirkt guter Schlaf für das Gehirn und das Immunsystem? Und welche schwerwiegenden Krankheiten (wie Bluthochdruck, Übergewicht oder Burnout) sind direkt auf Schlafmangel zurückzuführen? Interaktive Workshops für Unternehmen und Interessierte.',
+    points: [
+      'Wissenschaftliche Zusammenhänge verständlich und lebendig erklärt',
+      'Prävention von Herz-Kreislauf-Erkrankungen und chronischer Erschöpfung',
+      'Ideal für betriebliches Gesundheitsmanagement (BGM) und Teams'
+    ],
+    icon: icons.heart
+  },
+  {
+    id: 'kaufberatung',
+    tag: 'Vor Ort & Unabhängig',
+    title: '4. Matratzen-Kaufberatung & Probeliegen',
+    text: 'Finde die perfekte Matratze ohne Fehlkauf. Wir analysieren deine Statur, Schlafposition (Rücken-, Seiten- oder Bauchschläfer) und eventuelle Beschwerden (HWS, LWS). Danach probierst du verschiedene Matratzentypen und Marken in Ruhe aus.',
+    points: [
+      'Vermessung & Prüfung der ergonomischen Wirbelsäulen-Lagerung',
+      'Vergleich von Naturlatex, Taschenfederkern und viskoelastischem Schaum',
+      'Abstimmung von Härtegrad, Topper und dem passenden Nackenkissen'
+    ],
+    icon: icons.mattress
+  }
+];
+
+const steps = [
+  { n: '1', title: 'Unverbindlich anfragen', text: 'Nenne uns kurz, welcher Service dich interessiert (Schlaflabor, Coaching, Workshop oder Kaufberatung).' },
+  { n: '2', title: 'Kostenloses Erstgespräch', text: 'Wir besprechen kurz deine Wünsche oder Symptome und vereinbaren einen passenden Termin vor Ort.' },
+  { n: '3', title: 'Persönliche Betreuung', text: 'Ob Messung im Schlaflabor, 1:1 Coaching oder Probeliegen: Du erhältst maximale Expertise für deinen gesunden Schlaf.' },
+];
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'MedicalBusiness',
+  '@id': pageUrl + '#betrieb',
+  name: 'Schlaf-Experten – Zentrum für Schlafgesundheit & Ergonomie',
+  description: 'Schlaf-Services vor Ort in Stuttgart und im Rems-Murr-Kreis: Schlaflabor, Schlaf-Coaching, Workshops und Matratzen-Kaufberatung.',
+  url: pageUrl,
+  telephone: sv.phoneLink,
+  email: sv.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: sv.street,
+    postalCode: sv.zip,
+    addressLocality: sv.city,
+    addressRegion: 'Baden-Württemberg',
+    addressCountry: 'DE'
+  },
+  areaServed: sv.areas.map((a) => ({ '@type': 'AdministrativeArea', name: a })),
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Schlaf-Dienstleistungen',
+    itemListElement: serviceList.map((s) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name: s.title, description: s.text }
+    }))
+  }
+};
+---
+<Base
+  title="Schlaf-Services: Schlaflabor, Coaching & Matratzen-Kaufberatung - Schlaf-Experten"
+  description="Professionelle Schlaf-Services vor Ort in Stuttgart & Waiblingen: Schlaflabor für Diagnose von Schlafproblemen, Schlaf-Coaching, Gesundheits-Workshops & Matratzenberatung."
+  path="/schlaf-services/"
+  jsonld={jsonld}
+>
+  <!-- Hero Section -->
+  <section class="se-hero se-svc-hero">
+    <div class="se-wrap">
+      <span class="se-hero-badge">Vor Ort in {sv.areas.join(' & im ')}</span>
+      <h1>Schlaf-Services: Wissenschaftlich fundiert zu gesundem Schlaf.</h1>
+      <p>Von der präzisen Schlaflabor-Diagnose über persönliches Coaching bis zur ergonomischen Matratzen-Kaufberatung und Workshops – alles aus einer Hand.</p>
+      <div class="se-hero-actions">
+        <a class="se-btn" href="#anfrage">Termin anfragen <Fragment set:html={arrow} /></a>
+        <a class="se-btn se-btn-ghost se-btn-on-dark" href={`tel:${sv.phoneLink}`}>Direkt anrufen: {sv.phone}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Service Cards -->
+  <section class="se-wrap se-section" id="leistungen">
+    <div class="se-section-head">
+      <h2>Unsere Leistungen im Überblick</h2>
+      <p>Ganzheitliche Betreuung für erholsamen Schlaf, Schmerzfreiheit und Vitalität.</p>
+    </div>
+    <div class="se-svc-grid">
+      {serviceList.map((s) => (
+        <article class="se-svc" id={s.id}>
+          <div class="se-svc-top">
+            <span class="se-cat-icon" set:html={s.icon} />
+            <span class="se-pill">{s.tag}</span>
+          </div>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+          <ul>
+            {s.points.map((p) => <li>{p}</li>)}
+          </ul>
+          <a class="se-svc-link" href="#anfrage">
+            Dazu anfragen <Fragment set:html={arrow} />
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- Process Steps -->
+  <section class="se-wrap se-section">
+    <div class="se-section-head">
+      <h2>So läuft dein Termin ab</h2>
+      <p>Einfach, transparent und individuell auf deine Bedürfnisse abgestimmt.</p>
+    </div>
+    <ol class="se-svc-steps">
+      {steps.map((s) => (
+        <li>
+          <span class="se-svc-num">{s.n}</span>
+          <div>
+            <strong>{s.title}</strong>
+            <p>{s.text}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <!-- Contact & Request Form -->
+  <section class="se-wrap se-section" id="anfrage">
+    <div class="se-svc-cta">
+      <div>
+        <span class="se-hero-badge" style="margin-bottom: 8px;">Einsatzgebiet {sv.areas.join(' & ')}</span>
+        <h2>Persönliche Beratung oder Termin anfragen</h2>
+        <p>Nenne uns kurz dein Anliegen (z. B. Schlafprobleme, Matratzenberatung, Coaching oder Workshop) und deine Kontaktdaten. Wir melden uns zeitnah bei dir.</p>
+        <address class="se-svc-address">
+          <strong>Schlaf-Experten – Zentrum für Schlafgesundheit</strong>
+          <span>{sv.street}</span>
+          <span>{sv.zip} {sv.city}</span>
+        </address>
+      </div>
+      <div class="se-svc-cta-action">
+        <a class="se-svc-phone" href={`tel:${sv.phoneLink}`}>
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg>
+          {sv.phone}
+        </a>
+        <span class="se-svc-mail" id="se-svc-mail">{sv.email}</span>
+        <div class="se-svc-cta-buttons">
+          <button class="se-btn" type="button" id="se-svc-copy" data-mail={sv.email}>E-Mail kopieren</button>
+          <a class="se-btn se-btn-ghost se-btn-on-dark" href={mail('Anfrage Schlaf-Services')}>Im Mail-Programm öffnen</a>
+        </div>
+        <span class="se-svc-copied" id="se-svc-copied" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    (function () {
+      var btn = document.getElementById('se-svc-copy');
+      var out = document.getElementById('se-svc-copied');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        var mail = btn.getAttribute('data-mail');
+        var done = function () { out.textContent = 'Adresse kopiert! Füge sie als Empfänger in dein E-Mail-Programm ein.'; };
+        var fallback = function () {
+          var r = document.createRange(); r.selectNodeContents(document.getElementById('se-svc-mail'));
+          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+          try { document.execCommand('copy'); done(); } catch (e) { out.textContent = 'Bitte die Adresse markieren und kopieren.'; }
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(mail).then(done, fallback); else fallback();
+      });
+    })();
+  </script>
+</Base>

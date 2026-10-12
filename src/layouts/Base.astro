@@ -1,0 +1,89 @@
+---
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource-variable/figtree';
+import '../styles/site.css';
+import { site } from '../site.config.js';
+
+const { title, description = site.tagline, image = '/bilder/schlaf-experten-logo.jpg', path = '/', noindex = false, type = 'website', jsonld = null } = Astro.props;
+const canonical = site.url + path;
+const year = new Date().getFullYear();
+---
+<!doctype html>
+<html lang={site.lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    {image && <meta property="og:image" content={site.url + image} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    {jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
+  </head>
+  <body>
+    <a class="se-skip" href="#inhalt">Zum Inhalt springen</a>
+    <header class="se-header">
+      <div class="se-wrap se-header-inner">
+        <a class="se-logo-link" href="/" aria-label="Schlaf-Experten Startseite">
+          <img class="se-logo-img" src="/bilder/schlaf-experten-icon.png" alt="Schlaf-Experten" width="200" height="56" />
+          <span>Schlaf-Experten</span>
+        </a>
+        <input type="checkbox" id="se-nav-toggle" class="se-nav-toggle" />
+        <label for="se-nav-toggle" class="se-nav-button"><span>Menü</span></label>
+        <nav class="se-nav" aria-label="Hauptmenü">
+          <a href="/#themen">Kategorien</a>
+          <a href="/#beitraege">Tests &amp; Erfahrungen</a>
+          <a class="se-nav-service" href="/schlaf-services/">Schlaf-Services</a>
+        </nav>
+      </div>
+    </header>
+    <main id="inhalt">
+      <slot />
+    </main>
+    <footer class="se-footer">
+      <div class="se-wrap">
+        <div class="se-footer-cols">
+          <div class="se-footer-brand">
+            <span class="se-footer-name">Schlaf-Experten</span>
+            <p>{site.tagline}</p>
+          </div>
+          <div>
+            <span class="se-footer-head">Themen</span>
+            <div class="se-footer-links">
+              {site.categories.map((c) => <a href={`/#themen`}>{c.name}</a>)}
+            </div>
+          </div>
+          <div>
+            <span class="se-footer-head">Vor Ort</span>
+            <div class="se-footer-links">
+              <a href="/schlaf-services/">Schlaf-Services Übersicht</a>
+              <a href="/schlaf-services/#schlaflabor">Schlaflabor &amp; Analyse</a>
+              <a href="/schlaf-services/#schlafcoaching">Schlaf-Coaching</a>
+              <a href="/schlaf-services/#workshops">Workshops</a>
+              <a href="/schlaf-services/#kaufberatung">Matratzen-Kaufberatung</a>
+            </div>
+          </div>
+          <div>
+            <span class="se-footer-head">Rechtliches</span>
+            <div class="se-footer-links">
+              <a href="/betten/impressum/">Impressum</a>
+              <a href="/datenschutzerklaerung/">Datenschutzerklärung</a>
+            </div>
+          </div>
+        </div>
+        <div class="se-footer-bottom">
+          <p>© {year} Schlaf-Experten. Alle Rechte vorbehalten.</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

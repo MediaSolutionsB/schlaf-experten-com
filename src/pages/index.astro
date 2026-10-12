@@ -1,0 +1,150 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../site.config.js';
+import { icons, arrow } from '../lib/icons.js';
+
+const title = 'Schlaf-Experten – Das Portal für gesunden Schlaf & Ergonomie';
+const description = 'Unabhängige Tests, fundierte Kaufberatung zu Matratzen, Boxspringbetten & Schlafsofas sowie Schlaf-Services vor Ort.';
+
+const featuredArticles = [
+  {
+    title: 'Bruno Boxspringbett Test: Lohnt sich der Kauf?',
+    desc: 'Erfahrungsbericht, Aufbau, Liegegefühl und 100-Nächte-Probezeit im genauen Praxistest.',
+    url: '/betten/bruno-boxspringbett/',
+    image: '/bilder/beitraege/brunobett-boxspringbett.jpg',
+    category: 'Boxspringbetten'
+  },
+  {
+    title: 'Bruno Schlafsofa Test: Lohnt sich der Kauf?',
+    desc: 'Praxistest der beliebten Schlafcouch: Verwandlung, Sitzkomfort und Schlafqualität für Gäste.',
+    url: '/betten/bruno-schlafsofa/',
+    image: '/bilder/beitraege/Bruno-Schlafsofa-testbericht.jpg',
+    category: 'Schlafsofas'
+  },
+  {
+    title: 'Kipli Naturlatex Matratze: Erfahrungen & Test',
+    desc: 'Härtetest der 100% Naturlatex-Matratze: Ergonomie, zwei Liegeseiten, Geruch und Ökobilanz.',
+    url: '/matratzen/kipli-erfahrungen-test/',
+    image: '/bilder/beitraege/Kipli-Test.jpg',
+    category: 'Matratzen'
+  }
+];
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  'name': site.name,
+  'url': site.url,
+  'description': site.tagline,
+};
+---
+<Base title={title} description={description} path="/" jsonld={jsonld}>
+  <!-- Hero Section -->
+  <section class="se-hero">
+    <div class="se-wrap se-hero-inner">
+      <span class="se-hero-badge">Unabhängig · Fundiert · Praxisnah</span>
+      <h1>Das Portal für gesunden Schlaf &amp; Ergonomie</h1>
+      <p>{description}</p>
+      <div class="se-hero-actions">
+        <a class="se-btn" href="#beitraege">Tests &amp; Berichte lesen</a>
+        <a class="se-btn se-btn-ghost se-btn-on-dark" href="/schlaf-services/">Schlaf-Services vor Ort</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- USPs Bar -->
+  <section class="se-usps">
+    <div class="se-wrap">
+      <div class="se-usps-grid">
+        <div class="se-usp-item">
+          <span class="se-usp-title">Echte Praxistests</span>
+          <span class="se-usp-desc">Matratzen, Betten und Schlafcouches wochenlang im Alltag auf Herz und Nieren geprüft.</span>
+        </div>
+        <div class="se-usp-item">
+          <span class="se-usp-title">Ergonomische Expertise</span>
+          <span class="se-usp-desc">Fundiertes Fachwissen zu Wirbelsäulenentlastung, Schlafphasen und Schlafgesundheit.</span>
+        </div>
+        <div class="se-usp-item">
+          <span class="se-usp-title">Persönliche Betreuung</span>
+          <span class="se-usp-desc">Schlaflabor, Schlaf-Coaching &amp; Vor-Ort-Kaufberatung im Raum Stuttgart &amp; Waiblingen.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Articles -->
+  <section id="beitraege" class="se-section">
+    <div class="se-wrap">
+      <div class="se-section-head">
+        <h2>Aktuelle Tests &amp; Erfahrungsberichte</h2>
+        <p>Ausführliche Langzeittests beliebter Bettsysteme, Schlafcouches und Naturmatratzen.</p>
+      </div>
+      <div class="se-article-grid">
+        {featuredArticles.map((art) => (
+          <a class="se-article-card" href={art.url}>
+            <img class="se-article-thumb" src={art.image} alt={art.title} loading="lazy" />
+            <div class="se-article-body">
+              <span class="se-article-badge">{art.category}</span>
+              <h3>{art.title}</h3>
+              <p>{art.desc}</p>
+              <span class="se-article-more">
+                Testbericht lesen <Fragment set:html={arrow} />
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section id="themen" class="se-section se-section-alt">
+    <div class="se-wrap">
+      <div class="se-section-head">
+        <h2>Themenbereiche &amp; Ausstattung</h2>
+        <p>Finde den passenden Bereich für erholsamen Schlaf und die richtige Bettausstattung.</p>
+      </div>
+      <div class="se-cat-grid">
+        {site.categories.map((c) => (
+          <div class="se-cat-card">
+            <div class="se-cat-icon">
+              <Fragment set:html={icons[c.icon] || icons.bed} />
+            </div>
+            <h3>{c.name}</h3>
+            <p>{c.text}</p>
+            <a class="se-cat-link" href="#beitraege">
+              Artikel ansehen <Fragment set:html={arrow} />
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Teaser -->
+  <section class="se-section">
+    <div class="se-wrap">
+      <div class="se-section-head">
+        <h2>Schlaf-Services vor Ort</h2>
+        <p>Professionelle Unterstützung für Menschen mit Schlafproblemen &amp; gezielte Kaufberatung.</p>
+      </div>
+      <div class="se-svc-grid">
+        {site.services.map((s) => (
+          <article class="se-svc" id={s.id}>
+            <div class="se-svc-top">
+              <span class="se-cat-icon">
+                <Fragment set:html={icons.moon} />
+              </span>
+              <span class="se-pill">{s.tag}</span>
+            </div>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+            <a class="se-svc-link" href="/schlaf-services/">
+              Mehr erfahren &amp; Termin anfragen <Fragment set:html={arrow} />
+            </a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>

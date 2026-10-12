@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Seite nicht gefunden – Schlaf-Experten" description="Die aufgerufene Seite existiert leider nicht." path="/404/" noindex={true}>
+  <div class="se-wrap" style="text-align: center; padding: 80px 20px;">
+    <span class="se-hero-badge" style="margin-bottom: 16px;">404 Fehler</span>
+    <h1 style="font-size: clamp(32px, 5vw, 48px); margin-bottom: 16px;">Seite nicht gefunden</h1>
+    <p style="font-size: 19px; color: var(--muted); max-width: 500px; margin: 0 auto 28px;">
+      Die angeforderte Seite existiert nicht oder wurde verschoben.
+    </p>
+    <a class="se-btn" href="/">Zur Startseite zurückkehren</a>
+  </div>
+</Base>
