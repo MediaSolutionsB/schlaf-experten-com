@@ -1,0 +1,68 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Wahl from '../../components/Wahl.astro';
+import Zeit from '../../components/Zeit.astro';
+---
+<Seite slug="schichtarbeit-schlafrechner" title="Schlafplaner für Schichtarbeit: Früh-, Spät- und Nachtschicht"
+  h1="Schlafplaner für Schichtarbeit"
+  intro="Schicht und Arbeitszeiten eingeben. Der Planer zeigt dir, wann du schlafen solltest, damit du ausgeruht zur Arbeit kommst, bei Früh-, Spät- und Nachtschicht."
+  description="Schlafen im Schichtdienst: Die besten Schlafzeiten bei Frühschicht, Spätschicht und Nachtschicht berechnen. Mit Hauptschlaf, Vorschlaf vor der Nachtschicht und Tipps aus der Arbeitsmedizin.">
+  <Fragment slot="eingaben">
+    <Wahl name="art" label="Welche Schicht?" value="nacht" options={[{ value: 'frueh', label: 'Frühschicht' }, { value: 'spaet', label: 'Spätschicht' }, { value: 'nacht', label: 'Nachtschicht' }]} />
+    <div class="se-row">
+      <Zeit id="beginn" label="Schichtbeginn" value="22:00" />
+      <Zeit id="ende" label="Schichtende" value="06:00" />
+    </div>
+    <Feld id="weg" label="Arbeitsweg (einfach)" unit="Minuten" value="30" />
+    <Feld id="schlaf" label="Gewünschte Schlafdauer" unit="Stunden" value="7,5" hint="Erwachsene: 7 bis 9 Stunden empfohlen." />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Schlafplan</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Gut schlafen im Schichtdienst</h2>
+    <p>Wer in Schichten arbeitet, schläft oft gegen seine innere Uhr. Besonders nach Nachtschichten ist der Schlaf am Tag kürzer und leichter. Ein fester Plan hilft, trotzdem auf genug Schlaf zu kommen.</p>
+    <h3>So rechnet der Planer</h3>
+    <ul>
+      <li><strong>Frühschicht:</strong> Aufstehen = Schichtbeginn − Arbeitsweg − 45 Minuten für Morgenroutine. Die Schlafenszeit ergibt sich aus deiner Schlafdauer plus 15 Minuten zum Einschlafen. Ins Bett zu gehen fällt am Vorabend oft schwer. Dunkle das Schlafzimmer ab und plane den Abend ruhig.</li>
+      <li><strong>Spätschicht:</strong> Nach der Heimkehr eine Stunde zum Runterkommen, dann schlafen und ausschlafen.</li>
+      <li><strong>Nachtschicht:</strong> Hauptschlaf möglichst direkt nach der Heimkehr (höchstens 7 Stunden am Stück, länger klappt am Tag selten). Dazu ein Vorschlaf von etwa 90 Minuten am frühen Abend, der eine Stunde vor dem Losgehen endet.</li>
+    </ul>
+    <h3>Tipps aus der Arbeitsmedizin</h3>
+    <ul>
+      <li>Auf dem Heimweg nach der Nachtschicht helles Licht meiden, etwa mit einer Sonnenbrille.</li>
+      <li>Schlafzimmer komplett abdunkeln, Handy stumm, Mitbewohner informieren.</li>
+      <li>Koffein in den letzten Stunden der Schicht weglassen, damit du danach einschlafen kannst.</li>
+      <li>Ein kurzes Nickerchen in der Pause (wenn erlaubt) kann gegen das Leistungstief in der Nacht helfen.</li>
+      <li>Vorwärts rotierende Schichtfolgen (Früh → Spät → Nacht) gelten als besser verträglich als rückwärts rotierende.</li>
+    </ul>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quellen: Bundesanstalt für Arbeitsschutz und Arbeitsmedizin (BAuA), Leitfaden zur Einführung und Gestaltung von Nacht- und Schichtarbeit; S2k-Leitlinie „Gesundheitliche Aspekte und Gestaltung von Nacht- und Schichtarbeit“ (DGAUM).</p>
+  </Fragment>
+</Seite>
+<script>
+  import { schicht } from '../../rechner/schlaf.js';
+  import { $, radio, bind, zeitVon, zahl } from '../../rechner/ui.js';
+  const VORGABE = { frueh: ['06:00', '14:00'], spaet: ['14:00', '22:00'], nacht: ['22:00', '06:00'] };
+  let letzteArt = 'nacht';
+  function run() {
+    const art = radio('art');
+    if (art !== letzteArt) { $('beginn').value = VORGABE[art][0]; $('ende').value = VORGABE[art][1]; letzteArt = art; }
+    const beginn = zeitVon('beginn'), ende = zeitVon('ende');
+    if (beginn === null || ende === null) { $('out').innerHTML = '<p class="se-res-empty">Bitte Schichtbeginn und -ende eingeben.</p>'; return; }
+    const r = schicht({ art, beginn, ende, wegMin: zahl('weg') ?? 30, schlafH: zahl('schlaf') || 7.5 });
+    if (art === 'nacht') {
+      $('out').innerHTML = `<div class="se-big"><strong>${r.bett}–${r.aufstehen}</strong><span>Hauptschlaf nach der Nachtschicht</span></div>
+        <ul class="se-res-list"><li><span>Zu Hause um</span><b>${r.heim} Uhr</b></li><li><span>Vorschlaf vor der nächsten Schicht</span><b>${r.napStart}–${r.napEnde} Uhr</b></li></ul>
+        <p class="se-res-note">Vor der <strong>ersten</strong> Nachtschicht: normal schlafen, dann den Vorschlaf am frühen Abend einplanen.</p>`;
+    } else {
+      $('out').innerHTML = `<div class="se-big"><strong>${r.bett} Uhr</strong><span>ins Bett gehen</span></div>
+        <ul class="se-res-list"><li><span>Aufstehen um</span><b>${r.aufstehen} Uhr</b></li></ul>
+        <p class="se-res-note">15 Minuten zum Einschlafen sind eingerechnet.</p>`;
+    }
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

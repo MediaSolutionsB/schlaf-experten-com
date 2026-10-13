@@ -1,0 +1,51 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Wahl from '../../components/Wahl.astro';
+---
+<Seite slug="kissenhoehe-rechner" title="Kissenhöhe-Rechner: Wie hoch muss mein Kissen sein?"
+  h1="Kissenhöhe-Rechner: Die richtige Höhe für dein Kopfkissen"
+  intro="Schulterbreite messen, Schlafposition und Matratze wählen. Der Rechner zeigt dir, wie hoch dein Kissen ungefähr sein sollte, damit Kopf und Wirbelsäule auf einer Linie liegen."
+  description="Die richtige Kissenhöhe berechnen: für Seitenschläfer nach Schulterbreite, für Rücken- und Bauchschläfer. Mit Messanleitung und Tipps gegen Nackenverspannungen.">
+  <Fragment slot="eingaben">
+    <Wahl name="lage" label="Wie schläfst du meistens?" value="seite" options={[{ value: 'seite', label: 'Seitenlage' }, { value: 'ruecken', label: 'Rückenlage' }, { value: 'bauch', label: 'Bauchlage' }]} />
+    <Feld id="schulter" label="Abstand Halsansatz bis Schulteraußenkante" unit="cm" value="14" hint="Im Stehen messen: vom seitlichen Halsansatz bis zur äußeren Kante der Schulter. Meist 11 bis 17 cm." />
+    <Wahl name="matratze" label="Deine Matratze ist eher" value="mittel" options={[{ value: 'weich', label: 'Weich' }, { value: 'mittel', label: 'Mittel' }, { value: 'fest', label: 'Fest' }]} />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Warum die Kissenhöhe so wichtig ist</h2>
+    <p>Das Kissen soll den Raum zwischen Kopf und Matratze so ausfüllen, dass die <strong>Halswirbelsäule die gerade Verlängerung der restlichen Wirbelsäule</strong> bildet. Ist es zu hoch oder zu flach, knickt der Nacken ab. Verspannungen am Morgen sind häufig die Folge.</p>
+    <h3>So rechnet der Rechner</h3>
+    <ul>
+      <li><strong>Seitenlage:</strong> Das Kissen füllt den Abstand zwischen Matratze und Kopf. Der entspricht etwa der Strecke vom Halsansatz zur Schulteraußenkante. Ein Teil davon wird von der Matratze aufgenommen, weil die Schulter einsinkt: bei weichen Matratzen etwa 4 cm, bei mittleren 3 cm, bei festen 2 cm.</li>
+      <li><strong>Rückenlage:</strong> Deutlich flacher, meist 6 bis 11 cm, damit der Kopf nicht nach vorn gedrückt wird.</li>
+      <li><strong>Bauchlage:</strong> Sehr flach (bis etwa 6 cm) oder gar kein Kissen.</li>
+    </ul>
+    <h3>Tipps für den Kissenkauf</h3>
+    <ul>
+      <li>Gemeint ist die Höhe <strong>unter Belastung</strong>, nicht die Höhe im Laden. Weiche Füllungen drücken sich stärker zusammen.</li>
+      <li>Kissen mit herausnehmbarer Füllung oder mehreren Schichten lassen sich genau einstellen.</li>
+      <li>Ändert sich die Matratze, passt das alte Kissen oft nicht mehr. Prüf dann die Höhe neu.</li>
+    </ul>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Hinweis: Die Werte sind Richtwerte. Bei anhaltenden Nackenbeschwerden lass dich ärztlich oder physiotherapeutisch beraten.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { kissenhoehe } from '../../rechner/schlaf.js';
+  import { $, num, radio, bind } from '../../rechner/ui.js';
+  function run() {
+    const lage = radio('lage');
+    const schulterCm = num('schulter');
+    if (lage === 'seite' && !schulterCm) { $('out').innerHTML = '<p class="se-res-empty">Bitte den Schulterabstand eingeben.</p>'; return; }
+    const r = kissenhoehe({ schulterCm: schulterCm || 14, lage, matratze: radio('matratze') });
+    const text = lage === 'seite' ? 'Gemessen unter Belastung, also wenn der Kopf auf dem Kissen liegt.' : lage === 'ruecken' ? 'Eher flach, damit der Kopf nicht nach vorn kippt.' : 'Sehr flach oder ganz ohne Kissen.';
+    $('out').innerHTML = `<div class="se-big"><strong>${r.von}–${r.bis} cm</strong><span>empfohlene Kissenhöhe</span></div><p class="se-res-note">${text}</p>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

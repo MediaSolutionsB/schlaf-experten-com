@@ -1,0 +1,45 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Wahl from '../../components/Wahl.astro';
+import { kostenProNacht } from '../../rechner/schlaf.js';
+const ZEILEN = [300, 600, 1000, 1500, 2500];
+const eur = (n) => n.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
+---
+<Seite slug="matratze-kosten-pro-nacht-rechner" title="Matratze: Kosten pro Nacht berechnen"
+  h1="Was kostet dich deine Matratze pro Nacht?"
+  intro="Preis und Nutzungsdauer eingeben. Der Rechner zeigt, was dich die Matratze pro Nacht und pro Monat kostet. Oft weniger als ein Kaffee."
+  description="Matratzenkosten pro Nacht berechnen: Kaufpreis geteilt durch die Nächte der Nutzungsdauer. Mit Vergleichstabelle von 300 bis 2.500 Euro und Kosten pro Person.">
+  <Fragment slot="eingaben">
+    <Feld id="preis" label="Kaufpreis" unit="€" value="800" />
+    <Feld id="jahre" label="Geplante Nutzungsdauer" unit="Jahre" value="8" hint="Gute Matratzen halten meist 8 bis 10 Jahre." />
+    <Wahl name="personen" label="Wie viele schlafen darauf?" value="1" options={[{ value: '1', label: '1 Person' }, { value: '2', label: '2 Personen' }]} />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Warum sich eine gute Matratze lohnt</h2>
+    <p>Du verbringst rund ein Drittel deines Lebens im Bett. Auf die Nacht gerechnet ist selbst eine teure Matratze erstaunlich günstig:</p>
+    <p><strong>Kosten pro Nacht = Kaufpreis ÷ (Nutzungsjahre × 365)</strong></p>
+    <table>
+      <tr><th>Kaufpreis</th><th>pro Nacht (8 Jahre)</th><th>pro Monat</th></tr>
+      {ZEILEN.map((p) => { const r = kostenProNacht({ preis: p, jahre: 8 }); return <tr><td>{eur(p)}</td><td>{eur(r.proNacht)}</td><td>{eur(r.proMonat)}</td></tr>; })}
+    </table>
+    <p>Teuer heißt aber nicht automatisch gut. Wichtiger als der Preis sind der passende Härtegrad, eine gute Verarbeitung und eine lange Probeliege-Zeit. In unseren Tests findest du Matratzen in allen Preisklassen.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { kostenProNacht } from '../../rechner/schlaf.js';
+  import { $, num, radio, bind, eur } from '../../rechner/ui.js';
+  function run() {
+    const preis = num('preis'), jahre = num('jahre');
+    if (!preis || !jahre) { $('out').innerHTML = '<p class="se-res-empty">Bitte Preis und Nutzungsdauer eingeben.</p>'; return; }
+    const personen = Number(radio('personen'));
+    const r = kostenProNacht({ preis, jahre, personen });
+    $('out').innerHTML = `<div class="se-big"><strong>${eur(r.proNacht)}</strong><span>pro Nacht</span></div>
+      <ul class="se-res-list"><li><span>Pro Monat</span><b>${eur(r.proMonat)}</b></li>${personen === 2 ? `<li><span>Pro Person und Nacht</span><b>${eur(r.proPerson)}</b></li>` : ''}<li><span>Nächte insgesamt</span><b>${r.naechte.toLocaleString('de-DE')}</b></li></ul>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

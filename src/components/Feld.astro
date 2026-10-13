@@ -1,0 +1,9 @@
+---
+// Zahlenfeld mit Einheit. Komma und Punkt werden beide akzeptiert.
+const { id, label, unit = '', value = '', hint = '' } = Astro.props;
+---
+<label class="se-field" for={id}>
+  <span>{label}</span>
+  <span class="se-input"><input id={id} name={id} type="text" inputmode="decimal" value={value} />{unit && <em>{unit}</em>}</span>
+  {hint && <small>{hint}</small>}
+</label>

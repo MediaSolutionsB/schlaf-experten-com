@@ -1,10 +1,13 @@
 import { site } from '../site.config.js';
 import { allReviews, urlOf } from '../lib/reviews.js';
+import { tools } from '../rechner/tools.js';
 
 export async function GET() {
   const pages = [
     '',
     'schlaf-services/',
+    'rechner/',
+    ...tools.map((t) => `rechner/${t.slug}/`),
     'impressum/',
     'datenschutzerklaerung/',
     ...site.categories.filter((c) => allReviews().some((r) => r.category && r.category.slug === c.slug)).map((c) => `kategorie/${c.slug}/`),

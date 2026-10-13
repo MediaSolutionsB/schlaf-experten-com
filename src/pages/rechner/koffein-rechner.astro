@@ -1,0 +1,70 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Wahl from '../../components/Wahl.astro';
+import Zeit from '../../components/Zeit.astro';
+import { GETRAENKE } from '../../rechner/schlaf.js';
+const START = [['filter', '07:30'], ['espresso', '13:30'], ['', ''], ['', '']];
+---
+<Seite slug="koffein-rechner" title="Koffein-Rechner: Wie viel Koffein ist beim Schlafen noch im Körper?"
+  h1="Koffein-Rechner: Raubt dir der Kaffee den Schlaf?"
+  intro="Trag ein, was du heute getrunken hast und wann du schlafen gehst. Der Rechner zeigt, wie viel Koffein zur Schlafenszeit noch in deinem Körper ist und bis wann der letzte Kaffee sinnvoll ist."
+  description="Koffein-Rechner: Wie viel Koffein ist zur Schlafenszeit noch im Körper? Mit Halbwertszeit, Koffeingehalt von Kaffee, Espresso, Tee, Cola und Energydrinks sowie den Grenzwerten der EFSA.">
+  <Fragment slot="eingaben">
+    <fieldset>
+      <legend>Was hast du heute getrunken?</legend>
+      {START.map(([g, t], i) => (
+        <div class="se-row">
+          <label class="se-field" for={`g${i}`}><span>Getränk {i + 1}</span>
+            <select id={`g${i}`}><option value="">– keins –</option>{GETRAENKE.map((d) => <option value={String(d.mg)} selected={d.id === g}>{d.name} · ca. {d.mg} mg</option>)}</select>
+          </label>
+          <Zeit id={`t${i}`} label="Uhrzeit" value={t} />
+        </div>
+      ))}
+    </fieldset>
+    <Zeit id="schlaf" label="Ich gehe schlafen um" value="23:00" />
+    <Wahl name="hwz" label="Wie schnell baust du Koffein ab?" value="5" options={[{ value: '3', label: 'Schnell (Raucher)' }, { value: '5', label: 'Normal' }, { value: '10', label: 'Langsam (Pille, Schwangerschaft)' }]} />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Wie lange wirkt Koffein?</h2>
+    <p>Koffein wird im Körper langsam abgebaut. Nach der <strong>Halbwertszeit</strong> ist noch die Hälfte da. Sie beträgt bei Erwachsenen im Mittel etwa <strong>5 Stunden</strong>, je nach Mensch aber zwischen etwa 1,5 und 9,5 Stunden. Rauchen beschleunigt den Abbau. Die Pille und eine Schwangerschaft verlangsamen ihn deutlich, im letzten Drittel der Schwangerschaft auf 15 Stunden und mehr.</p>
+    <p>Rechnung: <strong>Rest = Menge × 0,5<sup>(Stunden bis zum Schlafen ÷ Halbwertszeit)</sup></strong>. Ein Filterkaffee mit 90 mg um 15 Uhr bedeutet um 23 Uhr bei 5 Stunden Halbwertszeit noch knapp 30 mg.</p>
+    <h3>Was sagt die Wissenschaft?</h3>
+    <ul>
+      <li>Laut der Europäischen Behörde für Lebensmittelsicherheit (EFSA) kann schon eine Einzeldosis von <strong>100 mg</strong> bei manchen Erwachsenen Schlafdauer und Schlafqualität beeinträchtigen, besonders kurz vor dem Schlafengehen.</li>
+      <li>In einer Studie verkürzten 400 mg Koffein <strong>sechs Stunden vor dem Schlafen</strong> den Schlaf um mehr als eine Stunde, ohne dass die Teilnehmer es selbst bemerkten. Die Forscher raten deshalb, mindestens 6 Stunden vor dem Schlafen keinen Kaffee mehr zu trinken.</li>
+      <li>Als unbedenklich gelten laut EFSA für gesunde Erwachsene bis <strong>400 mg pro Tag</strong> und bis 200 mg auf einmal, in der Schwangerschaft und Stillzeit bis 200 mg pro Tag.</li>
+    </ul>
+    <h3>Koffeingehalt typischer Getränke</h3>
+    <table>
+      <tr><th>Getränk</th><th>Koffein (ca.)</th></tr>
+      {GETRAENKE.map((d) => <tr><td>{d.name}</td><td>{d.mg} mg</td></tr>)}
+    </table>
+    <p>Der Gehalt schwankt je nach Sorte, Zubereitung und Tassengröße deutlich. Die Werte sind Durchschnittswerte.</p>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quellen: EFSA, Scientific Opinion on the safety of caffeine, 2015; Drake C. et al., Caffeine effects on sleep taken 0, 3, or 6 hours before going to bed, J Clin Sleep Med 2013; Institute of Medicine, Caffeine for the Sustainment of Mental Task Performance, 2001.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { koffein } from '../../rechner/schlaf.js';
+  import { $, radio, bind, zeitVon, fmt } from '../../rechner/ui.js';
+  const STUFE = { gering: 'Wenig Koffein: Das dürfte deinen Schlaf kaum stören.', mittel: 'Etwas Koffein ist noch da. Empfindliche Menschen schlafen damit schlechter ein.', hoch: 'Viel Koffein: Laut EFSA können schon 100 mg kurz vor dem Schlafen den Schlaf beeinträchtigen.' };
+  function run() {
+    const einnahmen = [0, 1, 2, 3].map((i) => ({ mg: Number($(`g${i}`).value || 0), zeit: zeitVon(`t${i}`) })).filter((e) => e.mg > 0 && e.zeit !== null);
+    const schlafen = zeitVon('schlaf');
+    if (schlafen === null) { $('out').innerHTML = '<p class="se-res-empty">Bitte die Schlafenszeit eingeben.</p>'; return; }
+    if (!einnahmen.length) { $('out').innerHTML = '<p class="se-res-empty">Bitte mindestens ein Getränk mit Uhrzeit auswählen.</p>'; return; }
+    const hwz = Number(radio('hwz'));
+    const r = koffein({ einnahmen, schlafen, halbwertszeitH: hwz, schwanger: hwz >= 10 });
+    $('out').innerHTML = `<div class="se-big"><strong>${fmt(r.rest)} mg</strong><span>Koffein zur Schlafenszeit noch im Körper</span></div>
+      <p class="se-res-note">${STUFE[r.stufe]}</p>
+      <ul class="se-res-list"><li><span>Koffein heute insgesamt</span><b>${fmt(r.gesamt)} mg</b></li><li><span>Unbedenkliche Tagesmenge (EFSA)</span><b>bis ${r.grenze} mg${hwz >= 10 ? '*' : ''}</b></li><li><span>Letzter Kaffee möglichst bis</span><b>${r.letzterKaffee} Uhr</b></li></ul>
+      ${r.zuViel ? '<p class="se-res-note"><strong>Mehr als die von der EFSA als unbedenklich eingestufte Tagesmenge.</strong></p>' : ''}
+      ${hwz >= 10 ? '<p class="se-res-note">* 200 mg gelten für Schwangere und Stillende. Mit der Pille gilt für Erwachsene die Grenze von 400 mg.</p>' : ''}`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

@@ -1,0 +1,52 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Wahl from '../../components/Wahl.astro';
+---
+<Seite slug="bettdecken-rechner" title="Bettdecken-Rechner: Welche Wärmeklasse und Größe passt?"
+  h1="Bettdecken-Rechner: Welche Decke passt zu dir?"
+  intro="Schlafzimmer-Temperatur, Wärmeempfinden und Körpergröße eingeben. Der Rechner empfiehlt dir die passende Wärmeklasse und Deckengröße."
+  description="Die richtige Bettdecke finden: Wärmeklasse 1 bis 5 nach Schlafzimmer-Temperatur und Wärmeempfinden, Deckengröße nach Körpergröße (135×200, 155×220, Überlänge). Mit Tipps zu Füllungen.">
+  <Fragment slot="eingaben">
+    <Feld id="temp" label="Temperatur im Schlafzimmer nachts" unit="°C" value="18" />
+    <Wahl name="typ" label="Wie ist dein Wärmeempfinden?" value="normal" options={[{ value: 'friert', label: 'Ich friere leicht' }, { value: 'normal', label: 'Normal' }, { value: 'schwitzt', label: 'Ich schwitze leicht' }]} />
+    <Feld id="cm" label="Körpergröße (größte Person)" unit="cm" value="180" />
+    <Wahl name="personen" label="Wer schläft unter der Decke?" value="1" options={[{ value: '1', label: 'Ich allein' }, { value: '2', label: 'Wir zu zweit' }]} />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Wärmeklassen verständlich erklärt</h2>
+    <p>Viele Hersteller teilen Bettdecken in <strong>Wärmeklassen von 1 bis 5</strong> ein. Eine verbindliche Norm gibt es dafür nicht, die Klassen sind deshalb nur innerhalb einer Marke gut vergleichbar.</p>
+    <table>
+      <tr><th>Wärmeklasse</th><th>Passend bei</th></tr>
+      <tr><td>1 – sehr leicht</td><td>über 21 °C, Sommerdecke</td></tr>
+      <tr><td>2 – leicht</td><td>19–21 °C</td></tr>
+      <tr><td>3 – mittel</td><td>17–19 °C, Ganzjahresdecke</td></tr>
+      <tr><td>4 – warm</td><td>15–17 °C</td></tr>
+      <tr><td>5 – extra warm</td><td>unter 15 °C</td></tr>
+    </table>
+    <p>Wer leicht friert, nimmt eine Klasse wärmer, wer schnell schwitzt, eine leichter. Das Umweltbundesamt empfiehlt für Schlafzimmer <strong>17 bis 20 °C</strong>. Eine gute Alternative zur Ganzjahresdecke ist eine <strong>Vierjahreszeitendecke</strong>: zwei Decken, die du einzeln oder zusammengeknöpft nutzt.</p>
+    <h3>Die richtige Größe</h3>
+    <p>Die Decke sollte etwa <strong>20 cm länger sein als du</strong>. Standard ist 135 × 200 cm. Ab 180 cm Körpergröße empfiehlt sich 220 cm Länge, ab 200 cm eine Decke mit 240 cm. Mehr Breite (155 cm) gibt Platz zum Einkuscheln. Paare schlafen meist besser mit zwei eigenen Decken.</p>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quellen: Umweltbundesamt, Ratgeber „Gesund und umweltfreundlich heizen“ (Raumtemperaturen); Herstellerangaben zu Wärmeklassen.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { bettdecke } from '../../rechner/schlaf.js';
+  import { $, num, radio, bind, zahl } from '../../rechner/ui.js';
+  const NAME = { 1: 'sehr leicht', 2: 'leicht', 3: 'mittel', 4: 'warm', 5: 'extra warm' };
+  function run() {
+    const raumC = zahl('temp');
+    if (raumC === null) { $('out').innerHTML = '<p class="se-res-empty">Bitte die Temperatur eingeben.</p>'; return; }
+    const r = bettdecke({ raumC, typ: radio('typ'), groesse: num('cm') || 175, personen: Number(radio('personen')) });
+    $('out').innerHTML = `<div class="se-big"><strong>Wärmeklasse ${r.klasse}</strong><span>${NAME[r.klasse]}</span></div>
+      <ul class="se-res-list">${r.groessen.map((g, i) => `<li><span>${i === 0 ? 'Empfohlene Größe' : 'Alternative'}</span><b>${g}</b></li>`).join('')}</ul>
+      ${raumC > 20 ? '<p class="se-res-note">Dein Schlafzimmer ist wärmer als die empfohlenen 17–20 °C. Kühler schläft es sich meist besser.</p>' : ''}`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

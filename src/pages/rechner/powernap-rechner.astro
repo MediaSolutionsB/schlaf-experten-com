@@ -1,0 +1,53 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Wahl from '../../components/Wahl.astro';
+import Zeit from '../../components/Zeit.astro';
+---
+<Seite slug="powernap-rechner" title="Powernap-Rechner: Wann den Wecker stellen?"
+  h1="Powernap-Rechner: So lange solltest du mittags schlafen"
+  intro="Gib ein, wann du dich hinlegst, und wähle die Art des Nickerchens. Der Rechner sagt dir, wann der Wecker klingeln sollte, damit du erfrischt statt benommen aufwachst."
+  description="Powernap berechnen: Die richtige Weckzeit für 20-Minuten-Powernap, NASA-Nap (26 Minuten) oder einen ganzen Schlafzyklus (90 Minuten) – mit Einschlafzeit und Tipps.">
+  <Fragment slot="eingaben">
+    <Zeit id="start" label="Ich lege mich hin um" value="13:15" />
+    <Wahl name="art" label="Art des Nickerchens" value="kurz" options={[{ value: 'kurz', label: 'Powernap 20 Min.' }, { value: 'nasa', label: 'NASA-Nap 26 Min.' }, { value: 'zyklus', label: 'Ganzer Zyklus 90 Min.' }]} />
+    <Feld id="sol" label="So lange brauche ich zum Einschlafen" unit="Minuten" value="10" hint="Tagsüber meist 5 bis 15 Minuten." />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Wie lang sollte ein Powernap sein?</h2>
+    <table>
+      <tr><th>Dauer</th><th>Wirkung</th></tr>
+      <tr><td>10–20 Minuten</td><td>Klassischer Powernap: Du bleibst im Leichtschlaf und bist danach schnell wieder wach und konzentriert.</td></tr>
+      <tr><td>26 Minuten</td><td>„NASA-Nap“: In einer NASA-Studie mit Piloten verbesserte ein Nickerchen von im Schnitt 26 Minuten die Leistung um 34 % und die Aufmerksamkeit um 54 %.</td></tr>
+      <tr><td>30–60 Minuten</td><td>Ungünstig: Du gerätst in den Tiefschlaf und fühlst dich nach dem Wecken oft schlapp und benommen („Schlafträgheit“).</td></tr>
+      <tr><td>90 Minuten</td><td>Ein ganzer Schlafzyklus. Du wachst am Ende des Zyklus leichter auf. Sinnvoll, wenn du Schlaf nachholen musst, etwa nach einer Nachtschicht.</td></tr>
+    </table>
+    <h3>Tipps für den perfekten Mittagsschlaf</h3>
+    <ul>
+      <li><strong>Früh genug:</strong> Die beste Zeit ist das natürliche Leistungstief am frühen Nachmittag, etwa zwischen 13 und 15 Uhr. Später kann es den Nachtschlaf stören.</li>
+      <li><strong>Wecker stellen:</strong> Rechne die Zeit zum Einschlafen ein, sonst wird der Nap zu lang.</li>
+      <li><strong>Abdunkeln und Ruhe:</strong> Eine Schlafmaske und Ohrstöpsel helfen, schneller einzuschlafen.</li>
+      <li><strong>Kein Ersatz für Nachtschlaf:</strong> Bist du jeden Tag sehr müde, schläfst du nachts wahrscheinlich zu wenig.</li>
+    </ul>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quellen: Rosekind M. R. et al., Alertness management: strategic naps in operational settings (NASA Ames), J Sleep Res 1995; Sleep Foundation, Napping.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { powernap } from '../../rechner/schlaf.js';
+  import { $, radio, bind, zeitVon, zahl } from '../../rechner/ui.js';
+  function run() {
+    const start = zeitVon('start');
+    if (start === null) { $('out').innerHTML = '<p class="se-res-empty">Bitte eine Uhrzeit eingeben.</p>'; return; }
+    const r = powernap({ start, art: radio('art'), einschlafMin: zahl('sol') ?? 10 });
+    $('out').innerHTML = `<div class="se-big"><strong>${r.wecker} Uhr</strong><span>Wecker stellen auf</span></div>
+      <ul class="se-res-list"><li><span>Schlafzeit</span><b>${r.schlafMin} Minuten</b></li><li><span>Zeit im Liegen insgesamt</span><b>${r.liegeMin} Minuten</b></li></ul>
+      ${r.spaet ? '<p class="se-res-note"><strong>Hinweis:</strong> Ein Nickerchen ab etwa 15 Uhr kann das Einschlafen am Abend erschweren.</p>' : ''}`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

@@ -1,0 +1,46 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import { betthoehe } from '../../rechner/schlaf.js';
+const ZEILEN = [155, 165, 175, 185, 195];
+---
+<Seite slug="betthoehe-rechner" title="Betthöhe-Rechner: Wie hoch sollte mein Bett sein?"
+  h1="Betthöhe-Rechner: Die richtige Einstiegshöhe für dich"
+  intro="Körpergröße eingeben und du siehst, wie hoch die Liegefläche deines Bettes sein sollte, damit du bequem sitzt, ein- und aussteigst. Mit Komforthöhe für leichteres Aufstehen."
+  description="Ideale Betthöhe berechnen: Einstiegshöhe nach Körpergröße über die Kniekehlenhöhe, mit Komforthöhe für Senioren und Boxspringbetten. Mit Tabelle von 155 bis 195 cm.">
+  <Fragment slot="eingaben">
+    <Feld id="cm" label="Körpergröße" unit="cm" value="175" />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>So wird die ideale Betthöhe berechnet</h2>
+    <p>Bequem ist ein Bett, wenn du beim Sitzen auf der Bettkante mit beiden Füßen flach auf dem Boden stehst und die <strong>Knie etwa im rechten Winkel</strong> sind. Dafür muss die Liegefläche ungefähr so hoch sein wie deine Kniekehle.</p>
+    <p>Die Kniekehlenhöhe beträgt bei Erwachsenen rund <strong>ein Viertel der Körpergröße</strong> (nach den Körpermaßen der DIN 33402). Weil die Matratze beim Sitzen einige Zentimeter nachgibt, rechnen wir 4 cm dazu:</p>
+    <p><strong>Ideale Höhe ≈ Körpergröße × 0,25 + 4 cm</strong>, gemessen vom Boden bis zur Oberkante der Matratze.</p>
+    <table>
+      <tr><th>Körpergröße</th><th>Ideale Höhe</th><th>Komforthöhe</th></tr>
+      {ZEILEN.map((g) => { const r = betthoehe({ groesse: g }); return <tr><td>{g} cm</td><td>ca. {r.ideal} cm</td><td>{r.komfortVon}–{r.komfortBis} cm</td></tr>; })}
+    </table>
+    <h3>Wann ist ein höheres Bett sinnvoll?</h3>
+    <p>Etwas höher („Komforthöhe“) fällt das Aufstehen leichter, weil du nicht so tief aus der Hocke hoch musst. Das hilft bei Knie- oder Rückenproblemen und im Alter. Boxspringbetten liegen deshalb oft bei 55 bis 65 cm. Zu hoch sollte es aber nicht sein: Die Füße müssen beim Sitzen sicher den Boden erreichen.</p>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quelle Körpermaße: DIN 33402-2, Ergonomie – Körpermaße des Menschen. Die Werte sind Durchschnittswerte; Beinlänge und Matratze unterscheiden sich von Mensch zu Mensch.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { betthoehe } from '../../rechner/schlaf.js';
+  import { $, num, bind, fmt } from '../../rechner/ui.js';
+  function run() {
+    const groesse = num('cm');
+    if (!groesse) { $('out').innerHTML = '<p class="se-res-empty">Bitte die Körpergröße eingeben.</p>'; return; }
+    const r = betthoehe({ groesse });
+    $('out').innerHTML = `<div class="se-big"><strong>ca. ${r.ideal} cm</strong><span>ideale Höhe bis Oberkante Matratze</span></div>
+      <ul class="se-res-list"><li><span>Geschätzte Kniekehlenhöhe</span><b>${fmt(r.knie)} cm</b></li><li><span>Komforthöhe (leichteres Aufstehen)</span><b>${r.komfortVon}–${r.komfortBis} cm</b></li></ul>
+      <p class="se-res-note">Messen: Setz dich auf einen Stuhl, Füße flach, Knie im rechten Winkel. Die Höhe von Boden bis Kniekehle plus etwa 4 cm ist deine persönliche Idealhöhe.</p>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

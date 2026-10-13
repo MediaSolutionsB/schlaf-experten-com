@@ -1,0 +1,54 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Zeit from '../../components/Zeit.astro';
+import { BABY } from '../../rechner/schlaf.js';
+const mm = (m) => (m >= 60 ? `${(m / 60).toLocaleString('de-DE', { maximumFractionDigits: 2 })} Std.` : `${m} Min.`);
+---
+<Seite slug="babyschlaf-rechner" title="Babyschlaf-Rechner: Wachzeiten und Schlafbedarf nach Alter"
+  h1="Babyschlaf-Rechner: Wie viel Schlaf braucht dein Baby?"
+  intro="Alter deines Kindes und Aufwachzeit eingeben. Der Rechner zeigt den empfohlenen Schlaf pro Tag, typische Wachzeiten zwischen den Schläfchen und einen Beispiel-Tagesablauf."
+  description="Babyschlaf berechnen: empfohlene Schlafdauer nach Alter (National Sleep Foundation), typische Wachfenster und Anzahl der Nickerchen von 0 bis 3 Jahren, mit Beispiel-Tagesablauf.">
+  <Fragment slot="eingaben">
+    <Feld id="monate" label="Alter des Kindes" unit="Monate" value="6" hint="Bei Frühgeborenen das korrigierte Alter nehmen (ab dem errechneten Geburtstermin)." />
+    <Zeit id="auf" label="Aufwachzeit am Morgen" value="07:00" />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Wie viel Schlaf brauchen Babys und Kleinkinder?</h2>
+    <p>Die National Sleep Foundation empfiehlt (Nickerchen am Tag eingerechnet): <strong>Neugeborene (0–3 Monate) 14–17 Stunden</strong>, Säuglinge (4–11 Monate) 12–15 Stunden, Kleinkinder (1–2 Jahre) 11–14 Stunden, Kindergartenkinder (3–5 Jahre) 10–13 Stunden.</p>
+    <h3>Typische Wachfenster und Nickerchen</h3>
+    <p>Das <strong>Wachfenster</strong> ist die Zeit, die ein Kind zwischen zwei Schlafphasen gut wach bleiben kann, bevor es übermüdet wird. Die folgenden Werte sind <strong>Erfahrungswerte</strong> aus der Kinderschlaf-Beratung und keine medizinische Norm. Jedes Kind hat seinen eigenen Rhythmus, achte auf Müdigkeitszeichen wie Augenreiben, Gähnen und Quengeln.</p>
+    <table>
+      <tr><th>Alter</th><th>Wachfenster</th><th>Nickerchen am Tag</th></tr>
+      {BABY.map((b) => <tr><td>{b.name}</td><td>{mm(b.wach[0])}–{mm(b.wach[1])}</td><td>{b.naps ? `${b.naps}${b.naps === 2 && b.bis === 15 ? ' (Übergang zu 1)' : ''}` : 'noch kein Rhythmus'}</td></tr>)}
+    </table>
+    <h3>Sicher schlafen</h3>
+    <p>Fachgesellschaften empfehlen für das erste Lebensjahr: Baby in <strong>Rückenlage</strong> schlafen lassen, im eigenen Bett im Elternschlafzimmer, im Schlafsack statt unter Decke und Kissen, rauchfreie Umgebung und eine Raumtemperatur von etwa 16–18 °C.</p>
+    <p>Bei Fragen zum Schlaf deines Kindes ist die Kinderärztin oder der Kinderarzt die richtige Anlaufstelle.</p>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quellen: Hirshkowitz M. et al., National Sleep Foundation's sleep time duration recommendations, Sleep Health 2015; Paruthi S. et al., Recommended Amount of Sleep for Pediatric Populations (AASM), J Clin Sleep Med 2016; Bundeszentrale für gesundheitliche Aufklärung / kindergesundheit-info.de, Sicherer Babyschlaf.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { babyschlaf } from '../../rechner/schlaf.js';
+  import { $, bind, zeitVon, zahl, fmt } from '../../rechner/ui.js';
+  const mm = (m) => (m >= 60 ? `${fmt(m / 60, 2)} Std.` : `${m} Min.`);
+  function run() {
+    const monate = zahl('monate'), auf = zeitVon('auf');
+    if (monate === null || auf === null) { $('out').innerHTML = '<p class="se-res-empty">Bitte Alter und Aufwachzeit eingeben.</p>'; return; }
+    if (monate > 36) { $('out').innerHTML = '<p class="se-res-note">Ab 3 Jahren hilft dir der Schlafbedarf-Rechner weiter.</p>'; return; }
+    const r = babyschlaf({ monate, aufwachen: auf });
+    const kopf = `<div class="se-big"><strong>${r.nsf.empfohlen[0]}–${r.nsf.empfohlen[1]} Std.</strong><span>empfohlener Schlaf pro Tag (inkl. Nickerchen)</span></div>
+      <ul class="se-res-list"><li><span>Typisches Wachfenster</span><b>${mm(r.band.wach[0])}–${mm(r.band.wach[1])}</b></li>`;
+    if (!r.plan) { $('out').innerHTML = kopf + '</ul><p class="se-res-note">In den ersten Wochen schlafen Babys noch ohne festen Tag-Nacht-Rhythmus, rund um die Uhr in kurzen Abschnitten. Ein Tagesplan ergibt noch keinen Sinn.</p>'; return; }
+    $('out').innerHTML = kopf + `<li><span>Nickerchen am Tag</span><b>${r.band.naps}</b></li></ul>
+      <ul class="se-res-list">${r.plan.map((p) => `<li><span>${p.was}</span><b>${p.zeit}${p.bis ? `–${p.bis}` : ''} Uhr</b></li>`).join('')}</ul>
+      <p class="se-res-note">Beispiel mit mittleren Werten: ${fmt(r.tagschlafH, 2)} Std. Tagschlaf + ${fmt(r.nachtH, 1)} Std. Nacht (inkl. nächtlicher Wachphasen). Passe den Plan an die Müdigkeitszeichen deines Kindes an.</p>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

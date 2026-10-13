@@ -1,0 +1,62 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Wahl from '../../components/Wahl.astro';
+---
+<Seite slug="schlafzimmer-lueften-rechner" title="Lüften im Schlafzimmer: CO2-Rechner für die Nacht"
+  h1="Lüften im Schlafzimmer: Wie schnell wird die Luft schlecht?"
+  intro="Raumgröße, Personenzahl und Fenster eingeben. Der Rechner schätzt, wie stark der CO2-Gehalt über Nacht ansteigt, und vergleicht ihn mit den Leitwerten des Umweltbundesamts."
+  description="CO2 im Schlafzimmer berechnen: Anstieg über Nacht nach Raumgröße, Personen und Fenster (geschlossen oder gekippt). Mit den CO2-Leitwerten des Umweltbundesamts und Lüftungstipps.">
+  <Fragment slot="eingaben">
+    <div class="se-row">
+      <Feld id="m2" label="Größe des Schlafzimmers" unit="m²" value="14" />
+      <Feld id="h" label="Raumhöhe" unit="m" value="2,5" />
+    </div>
+    <Wahl name="pers" label="Personen im Raum" value="2" options={[{ value: '1', label: '1' }, { value: '2', label: '2' }, { value: '3', label: '3' }]} />
+    <Wahl name="fenster" label="Fenster und Tür nachts" value="normal" options={[{ value: 'dicht', label: 'Zu (neues, dichtes Haus)' }, { value: 'normal', label: 'Zu (ältere Fenster)' }, { value: 'kipp', label: 'Fenster gekippt' }]} />
+    <Feld id="std" label="Schlafdauer" unit="Stunden" value="8" />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Warum CO2 im Schlafzimmer wichtig ist</h2>
+    <p>Beim Atmen geben wir Kohlendioxid (CO2) ab. In einem geschlossenen Schlafzimmer steigt der Gehalt über Nacht stark an. CO2 selbst ist in diesen Mengen nicht giftig, es ist aber ein guter <strong>Anzeiger für verbrauchte Luft</strong>. Hohe Werte gehen mit Müdigkeit, Kopfschmerzen und schlechterer Schlafqualität einher.</p>
+    <h3>Leitwerte des Umweltbundesamts</h3>
+    <table>
+      <tr><th>CO2-Gehalt</th><th>Bewertung</th></tr>
+      <tr><td>unter 1.000 ppm</td><td>hygienisch unbedenklich</td></tr>
+      <tr><td>1.000–2.000 ppm</td><td>hygienisch auffällig – mehr lüften</td></tr>
+      <tr><td>über 2.000 ppm</td><td>hygienisch inakzeptabel</td></tr>
+    </table>
+    <h3>So rechnet der Rechner</h3>
+    <p>Ein schlafender Mensch atmet etwa <strong>12 Liter CO2 pro Stunde</strong> aus. Wie schnell frische Luft nachströmt, beschreibt der <strong>Luftwechsel</strong>: Bei geschlossenen, dichten Fenstern wird die Raumluft nur etwa 0,1-mal pro Stunde ausgetauscht, bei älteren Fenstern etwa 0,3-mal, bei gekipptem Fenster grob 1- bis 2-mal (wir rechnen mit 1,5). Daraus ergibt sich der Verlauf über die Nacht:</p>
+    <p><strong>CO2(t) = Außenluft + Ausstoß ÷ (Luftwechsel × Raumvolumen) × (1 − e<sup>−Luftwechsel × t</sup>)</strong></p>
+    <p>Das ist eine Schätzung. Wind, Temperaturunterschied und offene Türen verändern den Luftwechsel stark. Genau weißt du es nur mit einem CO2-Messgerät.</p>
+    <h3>Tipps</h3>
+    <ul>
+      <li>Vor dem Schlafengehen <strong>5–10 Minuten stoßlüften</strong>, im Winter kürzer.</li>
+      <li>Wenn möglich die Zimmertür nachts offen lassen, das vergrößert das Luftvolumen.</li>
+      <li>Ein gekipptes Fenster bringt Frischluft, kühlt im Winter aber die Wände um das Fenster aus. Dann Heizung so einstellen, dass es nicht zu kalt wird.</li>
+    </ul>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quellen: Umweltbundesamt, Gesundheitliche Bewertung von Kohlendioxid in der Innenraumluft (Ad-hoc-Arbeitsgruppe, Bundesgesundheitsblatt 2008); Umweltbundesamt, Ratgeber „Atemluft in Innenräumen“.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { lueftung } from '../../rechner/schlaf.js';
+  import { $, num, radio, bind, fmt } from '../../rechner/ui.js';
+  const STUFE = { gut: 'Hygienisch unbedenklich – die Luft bleibt gut.', auffaellig: 'Hygienisch auffällig: Mehr Frischluft wäre besser, etwa gekipptes Fenster oder offene Tür.', schlecht: 'Hygienisch inakzeptabel nach den Leitwerten des Umweltbundesamts. Unbedingt für mehr Frischluft sorgen.' };
+  const std = (h) => (h === null ? '–' : h < 1 ? `nach ${Math.round(h * 60)} Min.` : `nach ${fmt(h, 1)} Std.`);
+  function run() {
+    const flaecheM2 = num('m2'), hoeheM = num('h') || 2.5, stunden = num('std') || 8;
+    if (!flaecheM2) { $('out').innerHTML = '<p class="se-res-empty">Bitte die Zimmergröße eingeben.</p>'; return; }
+    const r = lueftung({ flaecheM2, hoeheM, personen: Number(radio('pers')), fenster: radio('fenster'), stunden });
+    $('out').innerHTML = `<div class="se-big"><strong>ca. ${fmt(Math.round(r.ende / 50) * 50)} ppm</strong><span>CO2 am Morgen nach ${fmt(stunden, 1)} Stunden</span></div>
+      <p class="se-res-note">${STUFE[r.stufe]}</p>
+      <ul class="se-res-list"><li><span>Raumvolumen</span><b>${fmt(r.V)} m³</b></li><li><span>1.000 ppm erreicht</span><b>${r.bis1000 === null ? 'nie' : std(r.bis1000)}</b></li><li><span>2.000 ppm erreicht</span><b>${r.bis2000 === null ? 'nie' : std(r.bis2000)}</b></li></ul>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

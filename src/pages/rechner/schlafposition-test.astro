@@ -1,0 +1,46 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Wahl from '../../components/Wahl.astro';
+---
+<Seite slug="schlafposition-test" title="Schlafpositions-Check: Welche Matratze und welches Kissen passen?"
+  h1="Schlafpositions-Check: Was passt zu deiner Schlafposition?"
+  intro="Sag uns, wie du schläfst und ob du morgens Beschwerden hast. Du bekommst Empfehlungen für Matratze und Kissen, passend zu Seiten-, Rücken- oder Bauchlage."
+  description="Seitenschläfer, Rückenschläfer oder Bauchschläfer: Welche Matratze und welches Kissen passen zu deiner Schlafposition? Kurzer Check mit Tipps bei Nacken-, Schulter- und Rückenbeschwerden.">
+  <Fragment slot="eingaben">
+    <Wahl name="lage" label="In welcher Position wachst du meistens auf?" value="seite" options={[{ value: 'seite', label: 'Seitenlage' }, { value: 'ruecken', label: 'Rückenlage' }, { value: 'bauch', label: 'Bauchlage' }, { value: 'wechsel', label: 'Ganz unterschiedlich' }]} />
+    <fieldset>
+      <legend>Hast du morgens öfter Beschwerden?</legend>
+      <label class="se-check"><input type="checkbox" id="b_nacken" /><span>Nacken verspannt</span></label>
+      <label class="se-check"><input type="checkbox" id="b_schulter" /><span>Schulter oder Arm tut weh / schläft ein</span></label>
+      <label class="se-check"><input type="checkbox" id="b_ruecken" /><span>Unterer Rücken schmerzt</span></label>
+    </fieldset>
+    <label class="se-check"><input type="checkbox" id="schnarchen" /><span>Ich schnarche (sagt man mir)</span></label>
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Deine Empfehlung</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Welche Schlafposition ist die beste?</h2>
+    <p>Die meisten Erwachsenen schlafen überwiegend auf der <strong>Seite</strong>. Eine „perfekte“ Schlafposition gibt es nicht. Entscheidend ist, dass Matratze und Kissen deine Wirbelsäule in deiner Lieblingsposition gerade halten.</p>
+    <table>
+      <tr><th>Position</th><th>Matratze</th><th>Kissen</th></tr>
+      <tr><td>Seitenlage</td><td>mit weicher Schulterzone</td><td>höher, füllt den Raum zwischen Schulter und Kopf</td></tr>
+      <tr><td>Rückenlage</td><td>stützt den unteren Rücken</td><td>eher flach</td></tr>
+      <tr><td>Bauchlage</td><td>eher fest</td><td>sehr flach oder keins</td></tr>
+    </table>
+    <p>Die Bauchlage gilt als die ungünstigste Position, weil der Kopf stark zur Seite gedreht wird und viele ins Hohlkreuz fallen. Wer umgewöhnen will, kann es mit einem Seitenschläferkissen versuchen.</p>
+    <p>Wiederkehrende Schmerzen am Morgen solltest du ärztlich abklären lassen, besonders wenn sie auch nach einem Wechsel von Matratze oder Kissen bleiben.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { schlafposition } from '../../rechner/schlaf.js';
+  import { $, radio, bind, checked } from '../../rechner/ui.js';
+  function run() {
+    const beschwerden = ['nacken', 'schulter', 'ruecken'].filter((b) => checked(`b_${b}`));
+    const r = schlafposition({ lage: radio('lage'), beschwerden, schnarchen: checked('schnarchen') });
+    $('out').innerHTML = `<ul class="se-res-list">${r.tipps.map((t) => `<li><span>${t}</span></li>`).join('')}</ul>
+      <p class="se-res-note">Den passenden <a href="/rechner/matratzen-haertegrad-rechner/" style="color:#fff">Härtegrad</a> und die richtige <a href="/rechner/kissenhoehe-rechner/" style="color:#fff">Kissenhöhe</a> berechnest du mit unseren anderen Rechnern.</p>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

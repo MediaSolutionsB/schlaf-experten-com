@@ -1,0 +1,54 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+const TAGE = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+const START = ['6,5', '6', '7', '6', '6,5', '8,5', '8'];
+---
+<Seite slug="schlafschulden-rechner" title="Schlafschulden-Rechner: Wie viel Schlaf fehlt dir?"
+  h1="Schlafschulden-Rechner: Wie viel Schlaf fehlt dir?"
+  intro="Trag ein, wie viele Stunden du in den letzten sieben Nächten geschlafen hast. Der Rechner zeigt, wie viel Schlaf dir fehlt, und wie du ihn am besten wieder aufholst."
+  description="Schlafdefizit berechnen: Wie viele Stunden Schlaf fehlen dir nach einer Woche? Mit persönlichem Schlafbedarf, Wochenübersicht und Tipps zum Aufholen.">
+  <Fragment slot="eingaben">
+    <Feld id="bedarf" label="Dein Schlafbedarf pro Nacht" unit="Stunden" value="8" hint="Erwachsene: meist 7 bis 9 Stunden. Unsicher? Nimm 8 Stunden." />
+    <fieldset>
+      <legend>Geschlafen in den letzten 7 Nächten</legend>
+      <div class="se-row">
+        {TAGE.map((t, i) => <Feld id={`n${i}`} label={t} unit="Std." value={START[i]} />)}
+      </div>
+    </fieldset>
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Was sind Schlafschulden?</h2>
+    <p>Schläfst du weniger, als dein Körper braucht, entsteht ein <strong>Schlafdefizit</strong>. Es summiert sich über die Tage: Wer an fünf Werktagen jeweils eine Stunde zu wenig schläft, hat am Freitag fünf Stunden Schlafschulden. Studien zeigen, dass schon wenige Nächte mit zu wenig Schlaf Konzentration und Reaktionszeit messbar verschlechtern, auch wenn man sich selbst gar nicht so müde fühlt.</p>
+    <p>Der Rechner zählt für jede Nacht die Stunden unter deinem Bedarf zusammen. Nächte mit mehr Schlaf ziehen wir getrennt ab. Ausschlafen gleicht ein Defizit aber nur zum Teil aus.</p>
+    <h3>Schlafschulden richtig abbauen</h3>
+    <ul>
+      <li><strong>Lieber früher ins Bett als lange ausschlafen:</strong> Geh einige Abende 30 bis 60 Minuten früher schlafen.</li>
+      <li><strong>Aufstehzeit möglichst gleich lassen:</strong> Wer am Wochenende stundenlang ausschläft, verschiebt seine innere Uhr. Der Montag fällt dann noch schwerer („sozialer Jetlag“).</li>
+      <li><strong>Kurze Nickerchen:</strong> 20 Minuten am frühen Nachmittag helfen gegen Müdigkeit, ohne den Nachtschlaf zu stören.</li>
+      <li><strong>Ursache angehen:</strong> Fehlt dir regelmäßig Schlaf, plane deine Abende so, dass genug Zeit im Bett bleibt.</li>
+    </ul>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quellen: Van Dongen H. P. et al., The cumulative cost of additional wakefulness, Sleep 2003; Watson N. F. et al., AASM/SRS Consensus Statement, Sleep 2015.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { schlafschulden } from '../../rechner/schlaf.js';
+  import { $, bind, zahl, fmt } from '../../rechner/ui.js';
+  const h = (n) => `${fmt(n, 1)} Std.`;
+  function run() {
+    const bedarfH = zahl('bedarf');
+    const naechte = Array.from({ length: 7 }, (_, i) => zahl(`n${i}`)).filter((n) => n !== null);
+    if (!bedarfH || !naechte.length) { $('out').innerHTML = '<p class="se-res-empty">Bitte Schlafbedarf und mindestens eine Nacht eintragen.</p>'; return; }
+    const r = schlafschulden({ naechte, bedarfH });
+    $('out').innerHTML = `<div class="se-big"><strong>${h(r.netto)}</strong><span>Schlafschulden nach ${r.naechte} Nächten</span></div>
+      <ul class="se-res-list"><li><span>Fehlender Schlaf (Summe)</span><b>${h(r.schuld)}</b></li><li><span>Mehr geschlafen (Summe)</span><b>${h(r.plus)}</b></li><li><span>Durchschnitt pro Nacht</span><b>${h(r.schnitt)}</b></li><li><span>Nächte mit mind. 1 Std. zu wenig</span><b>${r.kurzeNaechte}</b></li></ul>
+      <p class="se-res-note">${r.netto > 0 ? `Geh in den nächsten <strong>${Math.min(r.tageAbbau, 14)} Nächten</strong> etwa eine Stunde früher ins Bett und halte deine Aufstehzeit möglichst gleich.` : 'Sehr gut: Du hast in dieser Woche genug geschlafen.'}</p>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

@@ -1,0 +1,9 @@
+---
+// Uhrzeit-Feld (HH:MM)
+const { id, label, value = '', hint = '' } = Astro.props;
+---
+<label class="se-field" for={id}>
+  <span>{label}</span>
+  <span class="se-input"><input id={id} name={id} type="time" value={value} step="300" /><em>Uhr</em></span>
+  {hint && <small>{hint}</small>}
+</label>

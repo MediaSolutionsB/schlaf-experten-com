@@ -1,0 +1,54 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Wahl from '../../components/Wahl.astro';
+---
+<Seite slug="bettgroesse-rechner" title="Bettgröße-Rechner: Welches Bett passt zu mir?"
+  h1="Bettgröße-Rechner: Welche Länge und Breite brauchst du?"
+  intro="Körpergröße eingeben und angeben, ob du allein oder zu zweit schläfst. Du bekommst die passende Matratzen- und Bettgröße in Standardmaßen."
+  description="Die richtige Bettgröße berechnen: Matratzenlänge nach Körpergröße (+20 cm), Breite für Single und Paare. Mit Standardmaßen 90×200, 140×200, 180×200, Überlänge 210 und 220 cm.">
+  <Fragment slot="eingaben">
+    <Wahl name="personen" label="Wer schläft im Bett?" value="1" options={[{ value: '1', label: 'Ich allein' }, { value: '2', label: 'Zu zweit' }]} />
+    <Feld id="cm1" label="Körpergröße" unit="cm" value="182" />
+    <div data-personen="2" hidden><Feld id="cm2" label="Körpergröße der zweiten Person" unit="cm" value="168" /></div>
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>So findest du die richtige Bettgröße</h2>
+    <h3>Länge</h3>
+    <p>Die Faustregel: <strong>Liegefläche mindestens Körpergröße + 20 cm</strong>, bequemer sind + 30 cm. So haben Kopfkissen und Füße Platz, auch wenn du dich im Schlaf streckst. Bei Paaren zählt die größere Person.</p>
+    <table>
+      <tr><th>Körpergröße</th><th>Matratzenlänge</th></tr>
+      <tr><td>bis 170 cm</td><td>190 cm</td></tr>
+      <tr><td>bis 180 cm</td><td>200 cm (Standard)</td></tr>
+      <tr><td>bis 190 cm</td><td>210 cm</td></tr>
+      <tr><td>bis 200 cm</td><td>220 cm</td></tr>
+      <tr><td>über 200 cm</td><td>Sondermaß</td></tr>
+    </table>
+    <h3>Breite</h3>
+    <p>Allein reichen <strong>90 cm</strong>, bequemer sind 100 bis 140 cm. Paare brauchen mindestens <strong>160 cm</strong>, gut sind <strong>180 cm</strong>, also 90 cm pro Person. Wer unruhig schläft oder mit Kind oder Hund teilt, nimmt 200 cm. Zwei getrennte Matratzen (z. B. 2 × 90 × 200) erlauben unterschiedliche Härtegrade.</p>
+    <h3>Platz im Schlafzimmer</h3>
+    <p>Neben dem Bett sollten auf den genutzten Seiten mindestens 60 bis 70 cm Laufweg frei bleiben, damit du bequem ein- und aussteigen und das Bett beziehen kannst.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { bettgroesse } from '../../rechner/schlaf.js';
+  import { $, num, radio, bind } from '../../rechner/ui.js';
+  function run() {
+    const personen = Number(radio('personen'));
+    document.querySelectorAll('[data-personen]').forEach((el) => { el.hidden = personen !== 2; });
+    const g1 = num('cm1'), g2 = personen === 2 ? num('cm2') : 0;
+    if (!g1) { $('out').innerHTML = '<p class="se-res-empty">Bitte die Körpergröße eingeben.</p>'; return; }
+    const r = bettgroesse({ groesse: g1, groesse2: g2, personen });
+    const laenge = r.laenge ? `${r.laenge} cm` : 'Sonderlänge';
+    $('out').innerHTML = `<div class="se-big"><strong>${r.breite.gut} × ${r.laenge || '…'}</strong><span>empfohlene Liegefläche in cm</span></div>
+      <ul class="se-res-list"><li><span>Mindestlänge (Größe + 20 cm)</span><b>${r.minL} cm</b></li><li><span>Passende Standardlänge</span><b>${laenge}</b></li>
+      ${r.laengeKomfort && r.laengeKomfort !== r.laenge ? `<li><span>Bequemer (Größe + 30 cm)</span><b>${r.laengeKomfort} cm</b></li>` : ''}
+      <li><span>Breite: Minimum</span><b>${r.breite.min} cm</b></li><li><span>Breite: empfohlen</span><b>${r.breite.gut} cm</b></li><li><span>Breite: großzügig</span><b>${r.breite.gross} cm</b></li></ul>
+      ${r.ueberlaenge ? '<p class="se-res-note">Über 220 cm Länge brauchst du eine Matratze in Sondergröße. Viele Hersteller fertigen auf Maß.</p>' : ''}`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

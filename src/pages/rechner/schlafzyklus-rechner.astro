@@ -1,0 +1,58 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Wahl from '../../components/Wahl.astro';
+import Zeit from '../../components/Zeit.astro';
+import { schlafzyklus, minuten } from '../../rechner/schlaf.js';
+const BEISPIEL = schlafzyklus({ modus: 'aufstehen', zeit: minuten('06:30') });
+---
+<Seite slug="schlafzyklus-rechner" title="Schlafzyklus-Rechner: Wann ins Bett, um fit aufzuwachen?"
+  h1="Schlafzyklus-Rechner: Wann solltest du ins Bett gehen?"
+  intro="Gib ein, wann du aufstehen musst, und du siehst die besten Zeiten zum Schlafengehen. Oder andersherum: Wann solltest du den Wecker stellen, wenn du jetzt ins Bett gehst? Der Rechner plant in ganzen Schlafzyklen von etwa 90 Minuten."
+  description="Schlafzyklus-Rechner: Die beste Zeit zum Einschlafen oder Aufwachen in 90-Minuten-Zyklen berechnen. Mit Einschlafzeit, 4 bis 6 Zyklen und Erklärung der Schlafphasen.">
+  <Fragment slot="eingaben">
+    <Wahl name="modus" label="Was möchtest du wissen?" value="aufstehen" options={[{ value: 'aufstehen', label: 'Wann ins Bett?' }, { value: 'insbett', label: 'Wann aufstehen?' }]} />
+    <div data-modus="aufstehen"><Zeit id="auf" label="Ich muss aufstehen um" value="06:30" /></div>
+    <div data-modus="insbett" hidden><Zeit id="bett" label="Ich gehe ins Bett um" value="23:00" /></div>
+    <Feld id="sol" label="So lange brauche ich zum Einschlafen" unit="Minuten" value="15" hint="Bei gesunden Erwachsenen sind es meist 10 bis 20 Minuten." />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>So funktioniert der Schlafzyklus-Rechner</h2>
+    <p>Schlaf verläuft in <strong>Zyklen</strong>. Ein Zyklus besteht aus Leichtschlaf, Tiefschlaf und REM-Schlaf (Traumschlaf) und dauert im Durchschnitt etwa <strong>90 Minuten</strong>, bei den meisten Menschen zwischen 80 und 110 Minuten. In einer Nacht durchläufst du 4 bis 6 solcher Zyklen.</p>
+    <p>Wer mitten im Tiefschlaf geweckt wird, fühlt sich oft benommen. Am Ende eines Zyklus schläfst du dagegen leicht und wachst leichter auf. Der Rechner zählt deshalb ganze Zyklen ab deiner Aufstehzeit zurück und rechnet die Zeit zum Einschlafen dazu:</p>
+    <p><strong>Schlafenszeit = Aufstehzeit − Zyklen × 90 Minuten − Einschlafzeit</strong></p>
+    <h3>Beispiel: Aufstehen um 6:30 Uhr (15 Minuten Einschlafzeit)</h3>
+    <table>
+      <tr><th>Zyklen</th><th>Schlafdauer</th><th>Ins Bett um</th></tr>
+      {BEISPIEL.map((b) => <tr><td>{b.zyklen}</td><td>{b.schlafMin / 60} Stunden</td><td>{b.zeit} Uhr</td></tr>)}
+    </table>
+    <h3>Wie viele Zyklen sind richtig?</h3>
+    <p>Erwachsenen werden 7 bis 9 Stunden Schlaf empfohlen. Das entspricht <strong>5 bis 6 Zyklen</strong>. 4 Zyklen (6 Stunden) sind für die meisten auf Dauer zu wenig, auch wenn das Aufwachen danach leichter fällt.</p>
+    <p>Die 90 Minuten sind ein Mittelwert. Dein eigener Zyklus kann etwas kürzer oder länger sein und schwankt auch von Nacht zu Nacht. Nimm die Zeiten deshalb als Orientierung und probiere aus, wann du dich morgens am wachsten fühlst. Am wichtigsten ist ein regelmäßiger Rhythmus mit möglichst gleichen Aufstehzeiten, auch am Wochenende.</p>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quellen: National Sleep Foundation, Schlafdauer-Empfehlungen (Hirshkowitz et al., Sleep Health 2015); American Academy of Sleep Medicine, Bedtime Calculator (sleepeducation.org).</p>
+  </Fragment>
+</Seite>
+<script>
+  import { schlafzyklus } from '../../rechner/schlaf.js';
+  import { $, radio, bind, zeitVon, zahl } from '../../rechner/ui.js';
+  function run() {
+    const mod = radio('modus');
+    document.querySelectorAll('[data-modus]').forEach((el) => { el.hidden = el.dataset.modus !== mod; });
+    const zeit = zeitVon(mod === 'aufstehen' ? 'auf' : 'bett');
+    const sol = zahl('sol') ?? 15;
+    if (zeit === null) { $('out').innerHTML = '<p class="se-res-empty">Bitte eine Uhrzeit eingeben.</p>'; return; }
+    const r = schlafzyklus({ modus: mod, zeit, einschlafMin: sol });
+    const beste = r.find((x) => x.zyklen === 5);
+    const label = mod === 'aufstehen' ? 'Ins Bett um' : 'Wecker stellen auf';
+    $('out').innerHTML = `<div class="se-big"><strong>${beste.zeit} Uhr</strong><span>${label} – 5 Zyklen, 7,5 Stunden Schlaf</span></div>
+      <ul class="se-res-list">${r.map((x) => `<li><span>${x.zyklen} Zyklen (${(x.schlafMin / 60).toLocaleString('de-DE')} Std. Schlaf)${x.zyklen === 6 || x.zyklen === 5 ? ' ✓' : ''}</span><b>${x.zeit} Uhr</b></li>`).join('')}</ul>
+      <p class="se-res-note">Empfohlen für Erwachsene: <strong>5 oder 6 Zyklen</strong> (7,5 bis 9 Stunden). Die Einschlafzeit von ${sol} Minuten ist schon eingerechnet.</p>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

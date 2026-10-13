@@ -1,0 +1,62 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Zeit from '../../components/Zeit.astro';
+---
+<Seite slug="schlafeffizienz-rechner" title="Schlafeffizienz-Rechner: Wie gut schläfst du?"
+  h1="Schlafeffizienz-Rechner: Wie viel deiner Zeit im Bett schläfst du?"
+  intro="Trag ein, wann du ins Bett gehst, wann du aufstehst und wie lange du wach gelegen hast. Der Rechner zeigt deine Schlafeffizienz in Prozent und vergleicht sie mit den Kennwerten der National Sleep Foundation."
+  description="Schlafeffizienz berechnen: Anteil der Schlafzeit an der Zeit im Bett in Prozent. Mit Einschlafdauer, nächtlichen Wachphasen und den Richtwerten der National Sleep Foundation (85 %).">
+  <Fragment slot="eingaben">
+    <div class="se-row">
+      <Zeit id="bett" label="Ins Bett gegangen" value="23:00" />
+      <Zeit id="auf" label="Aufgestanden" value="07:00" />
+    </div>
+    <Feld id="sol" label="Bis zum Einschlafen" unit="Minuten" value="20" />
+    <Feld id="waso" label="Nachts wach gelegen (insgesamt)" unit="Minuten" value="25" />
+    <Feld id="lieg" label="Morgens wach im Bett geblieben" unit="Minuten" value="10" hint="Die Zeit zwischen Aufwachen und Aufstehen." />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Was ist Schlafeffizienz?</h2>
+    <p>Die Schlafeffizienz gibt an, welchen Anteil der Zeit im Bett du tatsächlich schläfst:</p>
+    <p><strong>Schlafeffizienz = Schlafzeit ÷ Zeit im Bett × 100</strong></p>
+    <p>Die Schlafzeit ist die Zeit im Bett minus Einschlafdauer, nächtliche Wachphasen und die Zeit, die du morgens noch wach liegst.</p>
+    <h3>Richtwerte der National Sleep Foundation</h3>
+    <table>
+      <tr><th>Kennwert</th><th>Gute Schlafqualität</th></tr>
+      <tr><td>Schlafeffizienz</td><td>85 % oder mehr</td></tr>
+      <tr><td>Einschlafdauer</td><td>höchstens 30 Minuten</td></tr>
+      <tr><td>Wach nach dem Einschlafen</td><td>höchstens 20 Minuten</td></tr>
+      <tr><td>Aufwachen nachts (länger als 5 Min.)</td><td>höchstens einmal</td></tr>
+    </table>
+    <h3>So verbesserst du deine Schlafeffizienz</h3>
+    <ul>
+      <li>Geh erst ins Bett, wenn du wirklich müde bist, und steh zur gleichen Zeit auf.</li>
+      <li>Nutze das Bett nur zum Schlafen, nicht zum Arbeiten, Fernsehen oder Handy-Scrollen.</li>
+      <li>Kannst du nachts lange nicht einschlafen, steh kurz auf und mach etwas Ruhiges bei gedämpftem Licht.</li>
+      <li>Liegt deine Schlafeffizienz über Wochen deutlich unter 85 %, sprich mit deiner Ärztin oder deinem Arzt.</li>
+    </ul>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quelle: Ohayon M. et al., National Sleep Foundation's sleep quality recommendations: first report, Sleep Health 2017.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { schlafeffizienz, dauer } from '../../rechner/schlaf.js';
+  import { $, bind, zeitVon, zahl, fmt } from '../../rechner/ui.js';
+  const STUFE = { gut: 'Gut: Das entspricht dem Richtwert der National Sleep Foundation (mindestens 85 %).', mittel: 'Etwas niedrig: Du liegst einige Zeit wach im Bett.', niedrig: 'Niedrig: Du verbringst viel Zeit wach im Bett.' };
+  function run() {
+    const bett = zeitVon('bett'), auf = zeitVon('auf');
+    if (bett === null || auf === null) { $('out').innerHTML = '<p class="se-res-empty">Bitte beide Uhrzeiten eingeben.</p>'; return; }
+    const r = schlafeffizienz({ bett, auf, einschlafMin: zahl('sol') ?? 0, wachMin: zahl('waso') ?? 0, liegenMin: zahl('lieg') ?? 0 });
+    $('out').innerHTML = `<div class="se-big"><strong>${fmt(r.eff, 1)} %</strong><span>Schlafeffizienz</span></div>
+      <p class="se-res-note">${STUFE[r.stufe]}</p>
+      <ul class="se-res-list"><li><span>Zeit im Bett</span><b>${dauer(r.imBett)}</b></li><li><span>Tatsächlich geschlafen</span><b>${dauer(r.schlaf)}</b></li>
+      <li><span>Einschlafdauer</span><b>${r.einschlafOk ? 'im Rahmen' : 'über 30 Min.'}</b></li><li><span>Wach nach dem Einschlafen</span><b>${r.wachOk ? 'im Rahmen' : 'über 20 Min.'}</b></li></ul>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

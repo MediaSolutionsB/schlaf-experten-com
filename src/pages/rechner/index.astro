@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import { tools, gruppen } from '../../rechner/tools.js';
+import { icons, arrow } from '../../lib/icons.js';
+---
+<Base title="Schlaf-Rechner: 20 Online-Rechner rund um Schlaf, Matratze und Bett" description="20 kostenlose Schlaf-Rechner: Schlafzyklus, Schlafbedarf, Schlafschulden, Powernap, Koffein, Jetlag, Chronotyp-Test, Matratzen-Härtegrad, Kissenhöhe, Bettgröße, Schlafzimmer-Klima und mehr." path="/rechner/">
+  <section class="se-pagehead">
+    <div class="se-wrap">
+      <nav class="se-crumbs" aria-label="Brotkrumen"><a href="/">Startseite</a><span aria-hidden="true">/</span><span>Schlaf-Rechner</span></nav>
+      <h1>Schlaf-Rechner</h1>
+      <p>Wann solltest du ins Bett gehen? Wie viel Schlaf fehlt dir? Welcher Härtegrad und welche Kissenhöhe passen zu dir? Unsere Rechner beantworten das in Sekunden. Alle sind kostenlos, rechnen direkt in deinem Browser und speichern nichts.</p>
+    </div>
+  </section>
+  <nav class="se-wrap se-tool-jump" aria-label="Themen">
+    {gruppen.map((g) => <a href={`#${g.id}`}>{g.name}</a>)}
+  </nav>
+  {gruppen.map((g) => (
+    <section class="se-wrap se-section" id={g.id}>
+      <div class="se-section-head"><h2>{g.name}</h2></div>
+      <div class="se-tools">
+        {tools.filter((t) => t.gruppe === g.id).map((t) => (
+          <a class="se-tool" href={`/rechner/${t.slug}/`}>
+            <span class="se-cat-ico"><Fragment set:html={icons[t.icon]} /></span>
+            <span class="se-tool-name">{t.name}</span>
+            <span class="se-tool-text">{t.kurz}</span>
+            <span class="se-tool-more">Jetzt ausrechnen <Fragment set:html={arrow} /></span>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+</Base>

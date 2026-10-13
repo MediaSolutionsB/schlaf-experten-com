@@ -1,0 +1,64 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Wahl from '../../components/Wahl.astro';
+---
+<Seite slug="matratzen-haertegrad-rechner" title="Matratzen-Härtegrad-Rechner: H2, H3 oder H4?"
+  h1="Matratzen-Härtegrad-Rechner: Welcher Härtegrad passt zu dir?"
+  intro="Gewicht, Größe und Schlafposition eingeben. Der Rechner empfiehlt dir den passenden Härtegrad von H1 bis H5 und erklärt, worauf du beim Kauf außerdem achten solltest."
+  description="Den richtigen Härtegrad der Matratze berechnen: H1, H2, H3, H4 oder H5 nach Körpergewicht und Schlafposition (Seiten-, Rücken-, Bauchschläfer). Mit Tabelle und Kauftipps.">
+  <Fragment slot="eingaben">
+    <div class="se-row">
+      <Feld id="kg" label="Körpergewicht" unit="kg" value="80" />
+      <Feld id="cm" label="Körpergröße" unit="cm" value="178" />
+    </div>
+    <Wahl name="lage" label="Wie schläfst du meistens?" value="seite" options={[{ value: 'seite', label: 'Seitenlage' }, { value: 'ruecken', label: 'Rückenlage' }, { value: 'bauch', label: 'Bauchlage' }, { value: 'wechsel', label: 'Wechselnd' }]} />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Welcher Härtegrad passt zu welchem Gewicht?</h2>
+    <p>Wichtig vorab: <strong>Härtegrade sind nicht genormt.</strong> Jeder Hersteller legt selbst fest, was H2 oder H3 bedeutet. Eine H3 des einen Herstellers kann sich wie eine H2 des anderen anfühlen. Die gängige Faustregel richtet sich nach dem Körpergewicht:</p>
+    <table>
+      <tr><th>Härtegrad</th><th>Körpergewicht</th></tr>
+      <tr><td>H1 (sehr weich)</td><td>bis 60 kg</td></tr>
+      <tr><td>H2 (weich bis mittel)</td><td>60–80 kg</td></tr>
+      <tr><td>H3 (mittel bis fest)</td><td>80–100 kg</td></tr>
+      <tr><td>H4 (fest)</td><td>100–130 kg</td></tr>
+      <tr><td>H5 (sehr fest)</td><td>über 130 kg</td></tr>
+    </table>
+    <h3>Die Schlafposition zählt mit</h3>
+    <ul>
+      <li><strong>Seitenschläfer:</strong> Schulter und Becken müssen einsinken können, damit die Wirbelsäule gerade liegt. Achte auf eine weiche Schulterzone. Im Zweifel eher den weicheren Grad wählen.</li>
+      <li><strong>Rückenschläfer:</strong> Der untere Rücken braucht Halt. Der Härtegrad nach Gewicht passt meist gut.</li>
+      <li><strong>Bauchschläfer:</strong> Eine Stufe fester, damit das Becken nicht durchhängt und kein Hohlkreuz entsteht.</li>
+    </ul>
+    <h3>Probeliegen schlägt jede Tabelle</h3>
+    <p>Das Ziel ist eine <strong>gerade Wirbelsäule in Seitenlage</strong> und eine natürliche S-Form in Rückenlage. Lass dich beim Probeliegen von der Seite anschauen. Viele Online-Händler bieten 100 Nächte oder mehr zum Testen, das ist die sicherste Methode.</p>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Hinweis: Die Gewichtsgrenzen sind die im Handel übliche Faustregel; eine Norm für Härtegrade gibt es nicht. Bei Rückenbeschwerden lass dich zusätzlich ärztlich oder physiotherapeutisch beraten.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { haertegrad } from '../../rechner/schlaf.js';
+  import { $, num, radio, bind, fmt } from '../../rechner/ui.js';
+  const NAME = { 1: 'sehr weich', 2: 'weich bis mittel', 3: 'mittel bis fest', 4: 'fest', 5: 'sehr fest' };
+  function run() {
+    const gewicht = num('kg'), groesse = num('cm'), lage = radio('lage');
+    if (!gewicht) { $('out').innerHTML = '<p class="se-res-empty">Bitte das Körpergewicht eingeben.</p>'; return; }
+    const r = haertegrad({ gewicht, groesse, lage });
+    const hinweise = [];
+    if (lage === 'bauch' && r.h > r.basis) hinweise.push('Als Bauchschläfer eine Stufe fester als nach dem Gewicht allein.');
+    if (lage === 'seite') hinweise.push('Achte auf eine weiche <strong>Schulterzone</strong>, damit die Schulter einsinken kann.');
+    if (lage === 'wechsel') hinweise.push('Bei wechselnden Lagen ist eine Matratze mit Zonen und mittlerem Härtegrad nach Gewicht meist die beste Wahl.');
+    if (r.nahObergrenze) hinweise.push(`Du liegst knapp unter der Grenze zu H${Math.min(5, r.basis + 1)}. Beim Probeliegen beide Grade vergleichen.`);
+    $('out').innerHTML = `<div class="se-big"><strong>H${r.h}</strong><span>${NAME[r.h]}</span></div>
+      <ul class="se-res-list"><li><span>Nach Körpergewicht</span><b>H${r.basis}</b></li>${r.bmi ? `<li><span>Body-Mass-Index</span><b>${fmt(r.bmi, 1)}</b></li>` : ''}</ul>
+      ${hinweise.map((h) => `<p class="se-res-note">${h}</p>`).join('')}
+      <p class="se-res-note">Härtegrade sind nicht genormt. Vergleiche immer mit den Angaben des jeweiligen Herstellers.</p>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

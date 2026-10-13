@@ -1,0 +1,54 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Wahl from '../../components/Wahl.astro';
+import { MATRATZEN_JAHRE } from '../../rechner/schlaf.js';
+---
+<Seite slug="matratze-austauschen-rechner" title="Wann neue Matratze? Rechner für die Lebensdauer deiner Matratze"
+  h1="Wann brauchst du eine neue Matratze?"
+  intro="Material, Kaufjahr und ein paar Angaben zur Nutzung eingeben. Der Rechner schätzt, wann deine Matratze ausgetauscht werden sollte, und zeigt die Warnzeichen."
+  description="Wie lange hält eine Matratze? Lebensdauer von Kaltschaum, Taschenfederkern, Latex und Viskoschaum berechnen. Mit Austauschjahr und Checkliste für eine durchgelegene Matratze.">
+  <Fragment slot="eingaben">
+    <label class="se-field" for="typ"><span>Material der Matratze</span>
+      <select id="typ">{Object.entries(MATRATZEN_JAHRE).map(([k, v]) => <option value={k}>{v.name}</option>)}</select>
+    </label>
+    <Feld id="jahr" label="Gekauft im Jahr" unit="" value="2018" />
+    <Feld id="kg" label="Körpergewicht (schwerste Person)" unit="kg" value="80" />
+    <Wahl name="wendet" label="Wendest oder drehst du die Matratze regelmäßig?" value="ja" options={[{ value: 'ja', label: 'Ja' }, { value: 'nein', label: 'Nein' }]} />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Wie lange hält eine Matratze?</h2>
+    <p>Hersteller und Verbraucherberater nennen für gute Matratzen meist <strong>8 bis 10 Jahre</strong>. Danach lässt die Stützkraft spürbar nach, und über die Jahre sammeln sich Hautschuppen, Schweiß und Milben im Kern.</p>
+    <table>
+      <tr><th>Material</th><th>Übliche Nutzungsdauer</th></tr>
+      {Object.values(MATRATZEN_JAHRE).map((t) => <tr><td>{t.name}</td><td>{t.von}–{t.bis} Jahre</td></tr>)}
+    </table>
+    <p>Bei mehr als 100 kg Körpergewicht und wenn die Matratze nie gewendet oder gedreht wird, ziehen wir jeweils ein Jahr ab. Das sind Richtwerte, die tatsächliche Haltbarkeit hängt stark von der Qualität ab.</p>
+    <h3>Diese Warnzeichen sprechen für eine neue Matratze</h3>
+    <ul>
+      <li>Sichtbare <strong>Kuhle</strong> oder Liegemulde, die sich nicht mehr zurückbildet</li>
+      <li>Du wachst mit <strong>Rücken- oder Nackenschmerzen</strong> auf, die im Lauf des Tages verschwinden</li>
+      <li>Du schläfst im Hotel oder bei Freunden spürbar besser</li>
+      <li>Die Federn quietschen oder du spürst sie</li>
+      <li>Allergie-Beschwerden, die nachts oder morgens stärker sind</li>
+    </ul>
+  </Fragment>
+</Seite>
+<script>
+  import { matratzeAustausch } from '../../rechner/schlaf.js';
+  import { $, num, radio, bind } from '../../rechner/ui.js';
+  function run() {
+    const kaufjahr = num('jahr'), jetzt = new Date().getFullYear();
+    if (!kaufjahr || kaufjahr < 1980 || kaufjahr > jetzt) { $('out').innerHTML = '<p class="se-res-empty">Bitte ein gültiges Kaufjahr eingeben.</p>'; return; }
+    const r = matratzeAustausch({ typ: $('typ').value, kaufjahr, jetzt, gewicht: num('kg') || 75, wendet: radio('wendet') === 'ja' });
+    const rest = r.jahrVon - jetzt;
+    $('out').innerHTML = `<div class="se-big"><strong>${r.jahrVon}–${r.jahrBis}</strong><span>empfohlener Austausch</span></div>
+      <ul class="se-res-list"><li><span>Alter deiner Matratze</span><b>${r.alter} Jahr${r.alter === 1 ? '' : 'e'}</b></li><li><span>Erwartete Nutzungsdauer</span><b>${r.von}–${r.bis} Jahre</b></li></ul>
+      <p class="se-res-note">${r.faellig ? '<strong>Deine Matratze hat ihre übliche Nutzungsdauer erreicht.</strong> Prüf die Warnzeichen unten – spätestens jetzt lohnt sich ein Vergleich.' : `Noch etwa <strong>${rest} Jahr${rest === 1 ? '' : 'e'}</strong> bis zum empfohlenen Austausch, wenn keine Warnzeichen auftreten.`}</p>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

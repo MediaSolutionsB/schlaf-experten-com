@@ -1,0 +1,53 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Wahl from '../../components/Wahl.astro';
+import Zeit from '../../components/Zeit.astro';
+import { NSF } from '../../rechner/schlaf.js';
+---
+<Seite slug="schlafbedarf-rechner" title="Schlafbedarf-Rechner: Wie viel Schlaf brauche ich?"
+  h1="Schlafbedarf nach Alter: Wie viel Schlaf brauchst du?"
+  intro="Alter eingeben und du siehst, wie viele Stunden Schlaf Fachleute empfehlen. Mit deiner Aufstehzeit berechnet der Rechner auch, wann du ins Bett gehen solltest."
+  description="Wie viel Schlaf braucht man? Schlafbedarf nach Alter für Babys, Kinder, Jugendliche, Erwachsene und Senioren nach den Empfehlungen der National Sleep Foundation – mit passender Schlafenszeit.">
+  <Fragment slot="eingaben">
+    <div class="se-row">
+      <Feld id="alter" label="Alter" unit="" value="35" />
+      <Wahl name="einheit" label="in" value="jahre" options={[{ value: 'jahre', label: 'Jahren' }, { value: 'monate', label: 'Monaten' }]} />
+    </div>
+    <Zeit id="auf" label="Aufstehzeit (optional)" value="06:30" hint="Für die Schlafenszeit. Wird ab 3 Jahren berechnet, darunter zählen Nickerchen am Tag mit." />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Empfohlene Schlafdauer nach Alter</h2>
+    <p>Die Werte stammen von einem Expertengremium der US-amerikanischen <strong>National Sleep Foundation</strong>, das dafür über 300 Studien ausgewertet hat. Neben dem empfohlenen Bereich gibt es einen Bereich, der für einzelne Menschen <strong>noch passen kann</strong>. Schläft jemand dauerhaft außerhalb davon, kann das ein Hinweis auf ein Problem sein.</p>
+    <table>
+      <tr><th>Altersgruppe</th><th>Empfohlen</th><th>Kann noch passen</th></tr>
+      {NSF.map((g) => <tr><td>{g.name}</td><td>{g.empfohlen[0]}–{g.empfohlen[1]} Std.</td><td>{g.passt[0]}–{g.passt[1]} Std.</td></tr>)}
+    </table>
+    <p>Bei Babys und Kleinkindern zählen die Nickerchen am Tag mit. Die American Academy of Sleep Medicine empfiehlt Erwachsenen ebenfalls <strong>mindestens 7 Stunden</strong> pro Nacht.</p>
+    <h3>Woran merkst du, ob du genug schläfst?</h3>
+    <p>Dein persönlicher Bedarf liegt irgendwo im empfohlenen Bereich. Ein guter Test ist der Urlaub: Wie lange schläfst du nach ein paar Tagen ohne Wecker? Wenn du tagsüber fit bist, ohne Wecker aufwachst und nicht ständig Koffein brauchst, passt deine Schlafdauer meist.</p>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quellen: Hirshkowitz M. et al., National Sleep Foundation's sleep time duration recommendations, Sleep Health 2015; Watson N. F. et al., Recommended Amount of Sleep for a Healthy Adult (AASM/SRS), Sleep 2015.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { schlafbedarf } from '../../rechner/schlaf.js';
+  import { $, radio, bind, zeitVon, zahl, fmt } from '../../rechner/ui.js';
+  function run() {
+    const a = zahl('alter');
+    if (a === null) { $('out').innerHTML = '<p class="se-res-empty">Bitte das Alter eingeben.</p>'; return; }
+    const monate = radio('einheit') === 'monate' ? Math.floor(a) : Math.floor(a * 12);
+    const r = schlafbedarf({ monate, aufstehen: zeitVon('auf') });
+    const g = r.gruppe;
+    $('out').innerHTML = `<div class="se-big"><strong>${g.empfohlen[0]}–${g.empfohlen[1]} Std.</strong><span>empfohlener Schlaf pro Tag</span></div>
+      <ul class="se-res-list"><li><span>Altersgruppe</span><b>${g.name}</b></li><li><span>Kann noch passen</span><b>${g.passt[0]}–${g.passt[1]} Std.</b></li>
+      ${r.bettVon ? `<li><span>Ins Bett zwischen</span><b>${r.bettVon} und ${r.bettBis} Uhr</b></li>` : ''}</ul>
+      ${monate < 36 ? '<p class="se-res-note">In diesem Alter zählen die <strong>Nickerchen am Tag</strong> mit. Mehr dazu im Babyschlaf-Rechner.</p>' : '<p class="se-res-note">Die Schlafenszeit enthält 15 Minuten zum Einschlafen.</p>'}`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

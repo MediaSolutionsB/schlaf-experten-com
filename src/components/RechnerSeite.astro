@@ -1,0 +1,64 @@
+---
+// Gemeinsamer Rahmen aller Rechner: Kopf, Eingaben links, Ergebnis rechts, darunter Erklärung und Quellen.
+import Base from '../layouts/Base.astro';
+import { site } from '../site.config.js';
+import { tools } from '../rechner/tools.js';
+import { icons, arrow } from '../lib/icons.js';
+import { allReviews } from '../lib/reviews.js';
+const { slug, title, h1, intro, description } = Astro.props;
+const tool = tools.find((t) => t.slug === slug);
+const cat = site.categories.find((c) => c.slug === tool?.kategorie && allReviews().some((r) => r.category && r.category.slug === c.slug));
+const andere = tools.filter((t) => t.slug !== slug && t.gruppe === tool?.gruppe).concat(tools.filter((t) => t.slug !== slug && t.gruppe !== tool?.gruppe)).slice(0, 4);
+const path = `/rechner/${slug}/`;
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: tool?.name || h1,
+  url: site.url + path,
+  description,
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Alle (läuft im Browser)',
+  inLanguage: 'de-DE',
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+  publisher: { '@type': 'Organization', name: site.name, url: site.url },
+};
+---
+<Base title={title} description={description} path={path} jsonld={jsonld}>
+  <section class="se-pagehead">
+    <div class="se-wrap">
+      <nav class="se-crumbs" aria-label="Brotkrumen">
+        <a href="/">Startseite</a><span aria-hidden="true">/</span>
+        <a href="/rechner/">Schlaf-Rechner</a><span aria-hidden="true">/</span>
+        <span>{tool?.name}</span>
+      </nav>
+      <h1>{h1}</h1>
+      <p>{intro}</p>
+    </div>
+  </section>
+
+  <div class="se-wrap se-calc" data-rechner={slug}>
+    <form class="se-calc-form" onsubmit="return false" autocomplete="off">
+      <slot name="eingaben" />
+    </form>
+    <div class="se-calc-result" aria-live="polite">
+      <slot name="ergebnis" />
+    </div>
+  </div>
+
+  <div class="se-wrap se-calc-info">
+    <section class="se-text">
+      <slot name="info" />
+      <p class="se-calc-hint">Alle Ergebnisse sind Richtwerte zur Orientierung und ersetzen keine ärztliche Beratung. Hast du über längere Zeit Schlafprobleme, sprich mit deiner Hausärztin oder deinem Hausarzt. Der Rechner läuft komplett in deinem Browser, es werden keine Daten gespeichert oder verschickt.</p>
+      <slot name="quellen" />
+    </section>
+    <aside class="se-calc-more">
+      {cat && <a class="se-calc-cat" href={`/kategorie/${cat.slug}/`}><span>Passende Tests und Ratgeber</span><strong>{cat.name}</strong><Fragment set:html={arrow} /></a>}
+      <span class="se-calc-more-head">Weitere Rechner</span>
+      {andere.map((t) => (
+        <a class="se-calc-link" href={`/rechner/${t.slug}/`}><span class="se-calc-link-ico"><Fragment set:html={icons[t.icon]} /></span><span>{t.name}</span></a>
+      ))}
+      <a class="se-calc-all" href="/rechner/">Alle Schlaf-Rechner</a>
+    </aside>
+  </div>
+</Base>

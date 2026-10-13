@@ -1,0 +1,52 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+---
+<Seite slug="schlafzimmer-klima-rechner" title="Schlafzimmer-Klima-Check: Temperatur und Luftfeuchtigkeit"
+  h1="Schlafzimmer-Klima-Check: Passen Temperatur und Luftfeuchtigkeit?"
+  intro="Lies Temperatur und Luftfeuchtigkeit von deinem Thermometer oder Hygrometer ab. Der Check zeigt, ob dein Schlafzimmer im guten Bereich liegt, und was du verbessern kannst."
+  description="Ideale Schlafzimmer-Temperatur und Luftfeuchtigkeit prüfen: 17–20 °C laut Umweltbundesamt und 40–60 % relative Luftfeuchte. Mit Bewertung und Tipps gegen Hitze, trockene Luft und Schimmel.">
+  <Fragment slot="eingaben">
+    <Feld id="temp" label="Raumtemperatur" unit="°C" value="21" />
+    <Feld id="rh" label="Relative Luftfeuchtigkeit" unit="%" value="55" />
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Das ideale Schlafzimmerklima</h2>
+    <table>
+      <tr><th>Wert</th><th>Empfehlung</th></tr>
+      <tr><td>Temperatur</td><td>17–20 °C (Umweltbundesamt)</td></tr>
+      <tr><td>Relative Luftfeuchtigkeit</td><td>40–60 %</td></tr>
+    </table>
+    <p>Zum Einschlafen sinkt die Körpertemperatur leicht ab. Ein <strong>kühles Schlafzimmer</strong> unterstützt das. Ist es zu warm, schläft man unruhiger und wacht öfter auf. Zu kalt sollte es aber auch nicht sein: Unter etwa 16 °C kühlen Wände aus und an kalten Stellen kann sich Feuchtigkeit niederschlagen.</p>
+    <p>Bei der Luftfeuchtigkeit gilt: <strong>Unter 30–40 %</strong> trocknen Schleimhäute aus, was manche Menschen als Kratzen im Hals oder trockene Augen merken. <strong>Über 60 %</strong> steigt die Gefahr von Schimmel und Hausstaubmilben fühlen sich wohler.</p>
+    <h3>Tipps</h3>
+    <ul>
+      <li><strong>Zu warm:</strong> Tagsüber Rollläden schließen, nachts oder früh morgens lüften, leichtere Bettdecke.</li>
+      <li><strong>Zu feucht:</strong> Morgens 5–10 Minuten stoßlüften (Fenster ganz auf), Wäsche nicht im Schlafzimmer trocknen, Möbel etwas von Außenwänden abrücken.</li>
+      <li><strong>Zu trocken:</strong> Weniger heizen, kurz stoßlüften statt Dauerkippen, Pflanzen oder ein Luftbefeuchter.</li>
+    </ul>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quellen: Umweltbundesamt, Raumtemperaturen und Luftfeuchtigkeit (Ratgeber „Schimmel im Haus“ und „Richtig heizen“).</p>
+  </Fragment>
+</Seite>
+<script>
+  import { klima } from '../../rechner/schlaf.js';
+  import { $, bind, zahl, fmt } from '../../rechner/ui.js';
+  const T = { kalt: ['Zu kalt', 'Unter 15 °C kühlen Wände aus. Etwas wärmer stellen.'], kuehl: ['Etwas kühl', 'Für manche angenehm, mit warmer Decke gut zum Schlafen.'], ideal: ['Ideal', 'Genau im empfohlenen Bereich von 17–20 °C.'], warm: ['Etwas warm', 'Ein bis zwei Grad kühler fördert den Schlaf.'], heiss: ['Zu warm', 'Deutlich über der Empfehlung. Tagsüber abdunkeln, nachts lüften.'] };
+  const F = { trocken: ['Zu trocken', 'Unter 30 %: Schleimhäute trocknen aus. Weniger heizen, Luft befeuchten.'], 'etwas-trocken': ['Etwas trocken', 'Leicht unter dem Idealbereich. Meist unproblematisch.'], ideal: ['Ideal', 'Im empfohlenen Bereich von 40–60 %.'], feucht: ['Etwas feucht', 'Über 60 %: Häufiger stoßlüften, sonst droht Schimmel.'], nass: ['Zu feucht', 'Über 70 %: Hohe Schimmelgefahr. Unbedingt regelmäßig stoßlüften und Ursache prüfen.'] };
+  function run() {
+    const tempC = zahl('temp'), rh = zahl('rh');
+    if (tempC === null || rh === null) { $('out').innerHTML = '<p class="se-res-empty">Bitte Temperatur und Luftfeuchtigkeit eingeben.</p>'; return; }
+    const r = klima({ tempC, rh });
+    const ok = r.temp === 'ideal' && r.feuchte === 'ideal';
+    $('out').innerHTML = `<div class="se-big"><strong>${ok ? 'Alles im grünen Bereich' : 'Da geht noch was'}</strong><span>${fmt(tempC, 1)} °C · ${fmt(rh)} % Luftfeuchtigkeit</span></div>
+      <ul class="se-res-list"><li><span>Temperatur</span><b>${T[r.temp][0]}</b></li><li><span>Luftfeuchtigkeit</span><b>${F[r.feuchte][0]}</b></li></ul>
+      <p class="se-res-note">${T[r.temp][1]}</p><p class="se-res-note">${F[r.feuchte][1]}</p>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

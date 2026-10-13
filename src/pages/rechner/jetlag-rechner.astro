@@ -1,0 +1,79 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import Feld from '../../components/Feld.astro';
+import Wahl from '../../components/Wahl.astro';
+import Zeit from '../../components/Zeit.astro';
+---
+<Seite slug="jetlag-rechner" title="Jetlag-Rechner: Wie lange dauert der Jetlag?"
+  h1="Jetlag- und Zeitumstellungs-Rechner"
+  intro="Wie viele Tage braucht deine innere Uhr nach einem Flug über mehrere Zeitzonen? Und wie kannst du dich schon vorher umstellen? Der Rechner hilft auch bei der Zeitumstellung im Frühjahr und Herbst."
+  description="Jetlag berechnen: Wie lange dauert die Umstellung nach Flügen nach Osten oder Westen? Mit Plan zum Vorab-Anpassen der Schlafzeiten und Tipps für die Zeitumstellung (Sommerzeit, Winterzeit).">
+  <Fragment slot="eingaben">
+    <Wahl name="modus" label="Was möchtest du planen?" value="reise" options={[{ value: 'reise', label: 'Flugreise' }, { value: 'umstellung', label: 'Zeitumstellung' }]} />
+    <div data-modus="reise">
+      <Feld id="zonen" label="Anzahl Zeitzonen (Zeitunterschied)" unit="Stunden" value="6" hint="z. B. Deutschland → New York: 6 Stunden, Deutschland → Thailand: 5 bis 6 Stunden." />
+      <Wahl name="richtung" label="Flugrichtung" value="west" options={[{ value: 'ost', label: 'Nach Osten (z. B. Asien)' }, { value: 'west', label: 'Nach Westen (z. B. USA)' }]} />
+    </div>
+    <div data-modus="umstellung" hidden>
+      <Wahl name="art" label="Welche Umstellung?" value="sommer" options={[{ value: 'sommer', label: 'Sommerzeit (März, Uhr vor)' }, { value: 'winter', label: 'Winterzeit (Oktober, Uhr zurück)' }]} />
+    </div>
+    <div class="se-row">
+      <Zeit id="bett" label="Normale Schlafenszeit" value="23:00" />
+      <Zeit id="auf" label="Normale Aufstehzeit" value="07:00" />
+    </div>
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Warum entsteht Jetlag?</h2>
+    <p>Deine innere Uhr richtet sich vor allem nach dem Tageslicht. Fliegst du über mehrere Zeitzonen, passen innere Uhr und Ortszeit nicht mehr zusammen. Die Folge: Müdigkeit am Tag, schlechter Schlaf in der Nacht, oft auch Verdauungsprobleme. Ab etwa <strong>3 Zeitzonen</strong> spüren das die meisten Menschen deutlich.</p>
+    <h3>So rechnet der Rechner</h3>
+    <p>Die innere Uhr stellt sich nach Flügen <strong>nach Osten um etwa 1 Stunde pro Tag</strong> um, nach <strong>Westen um etwa 1,5 Stunden pro Tag</strong>. Nach Westen fällt es leichter, weil man den Tag „verlängert“ und die innere Uhr ohnehin dazu neigt, etwas später zu laufen.</p>
+    <table>
+      <tr><th>Zeitunterschied</th><th>Nach Osten</th><th>Nach Westen</th></tr>
+      {[3, 6, 9].map((z) => <tr><td>{z} Stunden</td><td>ca. {z} Tage</td><td>ca. {Math.ceil(z / 1.5)} Tage</td></tr>)}
+    </table>
+    <h3>Tipps gegen Jetlag</h3>
+    <ul>
+      <li><strong>Vorher umstellen:</strong> Verschiebe in den Tagen vor der Reise deine Schlafenszeit jeweils um etwa eine Stunde Richtung Zielzeit, nach Osten früher, nach Westen später.</li>
+      <li><strong>Licht gezielt nutzen:</strong> Nach Flügen nach Osten hilft Licht am Morgen, nach Westen Licht am Abend.</li>
+      <li><strong>Sofort Ortszeit leben:</strong> Essen und Schlafen nach der Uhr am Zielort, tagsüber höchstens kurze Nickerchen.</li>
+      <li><strong>Viel trinken, wenig Alkohol</strong> während des Flugs.</li>
+      <li>Melatonin wird gegen Jetlag eingesetzt. Sprich vorher mit deiner Ärztin, deinem Arzt oder in der Apotheke.</li>
+    </ul>
+    <h3>Zeitumstellung</h3>
+    <p>Die Zeitumstellung ist ein „Mini-Jetlag“ von einer Stunde. Wer empfindlich ist, verschiebt in den vier Tagen davor die Schlafenszeit jeweils um 15 Minuten. Vor der Sommerzeit früher, vor der Winterzeit später.</p>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quellen: Waterhouse J. et al., Jet lag: trends and coping strategies, Lancet 2007; IOGP/IPIECA, Fatigue Sheet „Jet lag“; CDC Yellow Book, Jet Lag.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { jetlag, zeitumstellung } from '../../rechner/schlaf.js';
+  import { $, radio, bind, zeitVon, zahl } from '../../rechner/ui.js';
+  function run() {
+    const mod = radio('modus');
+    document.querySelectorAll('[data-modus]').forEach((el) => { el.hidden = el.dataset.modus !== mod; });
+    const bett = zeitVon('bett'), auf = zeitVon('auf');
+    if (bett === null || auf === null) { $('out').innerHTML = '<p class="se-res-empty">Bitte Schlafens- und Aufstehzeit eingeben.</p>'; return; }
+    if (mod === 'umstellung') {
+      const art = radio('art');
+      const plan = zeitumstellung({ art, bett, auf });
+      $('out').innerHTML = `<div class="se-big"><strong>4 Tage</strong><span>vorher in 15-Minuten-Schritten umstellen</span></div>
+        <ul class="se-res-list">${plan.map((p) => `<li><span>${p.tag === 1 ? 'Letzter Tag vorher' : `${p.tag} Tage vorher`}</span><b>Bett ${p.bett} · Auf ${p.auf}</b></li>`).join('')}</ul>
+        <p class="se-res-note">${art === 'sommer' ? 'Nach der Umstellung gelten wieder deine normalen Zeiten nach der neuen Uhrzeit.' : 'Nach der Umstellung gelten wieder deine normalen Zeiten nach der neuen Uhrzeit.'}</p>`;
+      return;
+    }
+    const zonen = zahl('zonen');
+    if (!zonen) { $('out').innerHTML = '<p class="se-res-empty">Bitte den Zeitunterschied eingeben.</p>'; return; }
+    const r = jetlag({ zonen, richtung: radio('richtung'), bett, auf });
+    if (r.gering) { $('out').innerHTML = '<div class="se-big"><strong>Kaum Jetlag</strong><span>bei bis zu 2 Stunden Zeitunterschied</span></div><p class="se-res-note">Lebe ab der Ankunft einfach nach der Ortszeit.</p>'; return; }
+    $('out').innerHTML = `<div class="se-big"><strong>ca. ${r.tage} Tage</strong><span>bis sich deine innere Uhr umgestellt hat</span></div>
+      <ul class="se-res-list"><li><span>Umstellung pro Tag</span><b>ca. ${String(r.rate).replace('.', ',')} Std.</b></li>
+      ${r.vorab.map((p) => `<li><span>${p.tag === 1 ? 'Tag vor dem Abflug' : `${p.tag} Tage vor dem Abflug`}</span><b>Bett ${p.bett} · Auf ${p.auf}</b></li>`).join('')}</ul>
+      <p class="se-res-note">Mit dem Vorab-Plan stellst du dich schon zu Hause um ${r.vorab.length} Stunde${r.vorab.length > 1 ? 'n' : ''} um. Das verkürzt den Jetlag vor Ort entsprechend.</p>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>

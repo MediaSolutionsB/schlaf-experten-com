@@ -73,7 +73,7 @@ h1, h2, h3, h4 { font-family: var(--display); letter-spacing: -0.02em; line-heig
 .se-usp-desc { font-size: 14px; color: var(--muted); }
 
 /* Sections & Grids */
-.se-section { padding: 64px 0; }
+.se-section { padding-top: 64px; padding-bottom: 64px; }
 .se-section-alt { background: #ffffff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .se-section-head { margin-bottom: 40px; text-align: center; }
 .se-section-head h2 { font-size: clamp(26px, 3.5vw, 36px); margin-bottom: 10px; color: var(--night); }

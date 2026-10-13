@@ -1,0 +1,63 @@
+---
+import Seite from '../../components/RechnerSeite.astro';
+import { RMEQ, CHRONOTYPEN } from '../../rechner/schlaf.js';
+---
+<Seite slug="chronotyp-test" title="Chronotyp-Test: Bist du Lerche oder Eule?"
+  h1="Chronotyp-Test: Bist du Lerche oder Eule?"
+  intro="Beantworte fünf kurze Fragen. Der Test zeigt, ob du eher ein Morgen- oder ein Abendtyp bist. Er beruht auf dem wissenschaftlich geprüften Kurzfragebogen rMEQ."
+  description="Chronotyp-Test mit 5 Fragen: Morgentyp (Lerche), Abendtyp (Eule) oder Neutraltyp? Nach dem reduzierten Morningness-Eveningness-Fragebogen (rMEQ) von Adan & Almirall, mit Auswertung und Tipps.">
+  <Fragment slot="eingaben">
+    {RMEQ.map((q, i) => (
+      <div class="se-field" role="radiogroup" aria-label={q.frage}>
+        <span>{i + 1}. {q.frage}</span>
+        <div class="se-choice">
+          {q.antworten.map(([t, p]) => <label><input type="radio" name={q.id} value={String(p)} /><span>{t}</span></label>)}
+        </div>
+      </div>
+    ))}
+  </Fragment>
+  <Fragment slot="ergebnis">
+    <h2>Dein Ergebnis</h2>
+    <div id="out"></div>
+  </Fragment>
+  <Fragment slot="info">
+    <h2>Was ist ein Chronotyp?</h2>
+    <p>Jeder Mensch hat eine innere Uhr. Wann sie uns müde und wann wach macht, ist teilweise angeboren. Fachleute sprechen vom <strong>Chronotyp</strong>. Morgentypen („Lerchen“) werden früh müde und früh wach, Abendtypen („Eulen“) kommen abends erst richtig in Fahrt. Die meisten Menschen liegen dazwischen.</p>
+    <p>Der Chronotyp verändert sich im Lauf des Lebens: Jugendliche und junge Erwachsene sind oft deutlich spätere Typen, mit dem Alter verschiebt sich die innere Uhr wieder nach vorn.</p>
+    <h3>So wird ausgewertet</h3>
+    <p>Der Test nutzt den <strong>reduzierten Morningness-Eveningness-Fragebogen (rMEQ)</strong> von Adan und Almirall (1991). Er besteht aus fünf Fragen des bekannten Fragebogens von Horne und Östberg. Die Punkte werden addiert, die Summe liegt zwischen 4 und 25:</p>
+    <table>
+      <tr><th>Punkte</th><th>Chronotyp</th></tr>
+      {CHRONOTYPEN.map((t, i) => <tr><td>{i === 0 ? 4 : CHRONOTYPEN[i - 1].bis + 1}–{t.bis}</td><td>{t.name}</td></tr>)}
+    </table>
+    <h3>Was bringt dir das Ergebnis?</h3>
+    <ul>
+      <li><strong>Morgentypen</strong> legen anspruchsvolle Aufgaben in den Vormittag und gehen abends früh schlafen.</li>
+      <li><strong>Abendtypen</strong> profitieren von viel Tageslicht am Morgen. Das stellt die innere Uhr etwas früher. Helles Licht und Bildschirme spät am Abend verschieben sie dagegen nach hinten.</li>
+      <li>Für alle gilt: Ein regelmäßiger Rhythmus mit ähnlichen Zeiten an Werktagen und am Wochenende hilft am meisten.</li>
+    </ul>
+    <p>Der Test ist eine Selbsteinschätzung und keine Diagnose.</p>
+  </Fragment>
+  <Fragment slot="quellen">
+    <p class="se-calc-hint">Quellen: Adan A., Almirall H., Horne & Östberg morningness-eveningness questionnaire: A reduced scale, Personality and Individual Differences 1991; Horne J. A., Östberg O., Int J Chronobiol 1976.</p>
+  </Fragment>
+</Seite>
+<script>
+  import { chronotyp, RMEQ } from '../../rechner/schlaf.js';
+  import { $, radio, bind } from '../../rechner/ui.js';
+  const TEXT = {
+    abend2: 'Du kommst abends richtig in Fahrt und tust dich mit frühem Aufstehen schwer. Viel Tageslicht am Morgen und gedämpftes Licht am Abend helfen dir.',
+    abend1: 'Du bist eher abends aktiv. Ein fester Rhythmus und Licht am Morgen machen dir frühe Termine leichter.',
+    neutral: 'Du bist weder ausgeprägt Morgen- noch Abendtyp. So geht es den meisten Menschen.',
+    morgen1: 'Du bist morgens fit und wirst abends früher müde. Lege wichtige Aufgaben in den Vormittag.',
+    morgen2: 'Du bist eine echte Lerche: früh wach, früh müde. Späte Abende kosten dich besonders viel Energie.',
+  };
+  function run() {
+    const punkte = RMEQ.map((q) => { const v = radio(q.id); return v === '' ? NaN : Number(v); });
+    const offen = punkte.filter((p) => Number.isNaN(p)).length;
+    if (offen) { $('out').innerHTML = `<p class="se-res-empty">Noch ${offen} von 5 Fragen offen.</p>`; return; }
+    const r = chronotyp(punkte);
+    $('out').innerHTML = `<div class="se-big"><strong>${r.typ.name}</strong><span>${r.summe} von 25 Punkten</span></div><p class="se-res-note">${TEXT[r.typ.id]}</p>`;
+  }
+  bind(document.querySelector('.se-calc-form'), run);
+</script>
