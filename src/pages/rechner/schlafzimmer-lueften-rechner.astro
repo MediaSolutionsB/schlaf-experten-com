@@ -47,7 +47,7 @@ import Wahl from '../../components/Wahl.astro';
 </Seite>
 <script>
   import { lueftung } from '../../rechner/schlaf.js';
-  import { $, num, radio, bind, fmt } from '../../rechner/ui.js';
+  import { $, num, radio, bind, fmt, amazon, amazonHinweis } from '../../rechner/ui.js';
   const STUFE = { gut: 'Hygienisch unbedenklich – die Luft bleibt gut.', auffaellig: 'Hygienisch auffällig: Mehr Frischluft wäre besser, etwa gekipptes Fenster oder offene Tür.', schlecht: 'Hygienisch inakzeptabel nach den Leitwerten des Umweltbundesamts. Unbedingt für mehr Frischluft sorgen.' };
   const std = (h) => (h === null ? '–' : h < 1 ? `nach ${Math.round(h * 60)} Min.` : `nach ${fmt(h, 1)} Std.`);
   function run() {
@@ -56,7 +56,7 @@ import Wahl from '../../components/Wahl.astro';
     const r = lueftung({ flaecheM2, hoeheM, personen: Number(radio('pers')), fenster: radio('fenster'), stunden });
     $('out').innerHTML = `<div class="se-big"><strong>ca. ${fmt(Math.round(r.ende / 50) * 50)} ppm</strong><span>CO2 am Morgen nach ${fmt(stunden, 1)} Stunden</span></div>
       <p class="se-res-note">${STUFE[r.stufe]}</p>
-      <ul class="se-res-list"><li><span>Raumvolumen</span><b>${fmt(r.V)} m³</b></li><li><span>1.000 ppm erreicht</span><b>${r.bis1000 === null ? 'nie' : std(r.bis1000)}</b></li><li><span>2.000 ppm erreicht</span><b>${r.bis2000 === null ? 'nie' : std(r.bis2000)}</b></li></ul>`;
+      <ul class="se-res-list"><li><span>Raumvolumen</span><b>${fmt(r.V)} m³</b></li><li><span>1.000 ppm erreicht</span><b>${r.bis1000 === null ? 'nie' : std(r.bis1000)}</b></li><li><span>2.000 ppm erreicht</span><b>${r.bis2000 === null ? 'nie' : std(r.bis2000)}</b></li></ul>${amazon('Jetzt auf Amazon nach CO2-Messgeräten suchen', 'CO2 Messgerät Raumluft')}${amazonHinweis}`;
   }
   bind(document.querySelector('.se-calc-form'), run);
 </script>

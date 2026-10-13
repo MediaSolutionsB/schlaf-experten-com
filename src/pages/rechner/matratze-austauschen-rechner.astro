@@ -40,7 +40,7 @@ import { MATRATZEN_JAHRE } from '../../rechner/schlaf.js';
 </Seite>
 <script>
   import { matratzeAustausch } from '../../rechner/schlaf.js';
-  import { $, num, radio, bind } from '../../rechner/ui.js';
+  import { $, num, radio, bind, amazon, amazonHinweis } from '../../rechner/ui.js';
   function run() {
     const kaufjahr = num('jahr'), jetzt = new Date().getFullYear();
     if (!kaufjahr || kaufjahr < 1980 || kaufjahr > jetzt) { $('out').innerHTML = '<p class="se-res-empty">Bitte ein gültiges Kaufjahr eingeben.</p>'; return; }
@@ -48,7 +48,7 @@ import { MATRATZEN_JAHRE } from '../../rechner/schlaf.js';
     const rest = r.jahrVon - jetzt;
     $('out').innerHTML = `<div class="se-big"><strong>${r.jahrVon}–${r.jahrBis}</strong><span>empfohlener Austausch</span></div>
       <ul class="se-res-list"><li><span>Alter deiner Matratze</span><b>${r.alter} Jahr${r.alter === 1 ? '' : 'e'}</b></li><li><span>Erwartete Nutzungsdauer</span><b>${r.von}–${r.bis} Jahre</b></li></ul>
-      <p class="se-res-note">${r.faellig ? '<strong>Deine Matratze hat ihre übliche Nutzungsdauer erreicht.</strong> Prüf die Warnzeichen unten – spätestens jetzt lohnt sich ein Vergleich.' : `Noch etwa <strong>${rest} Jahr${rest === 1 ? '' : 'e'}</strong> bis zum empfohlenen Austausch, wenn keine Warnzeichen auftreten.`}</p>`;
+      <p class="se-res-note">${r.faellig ? '<strong>Deine Matratze hat ihre übliche Nutzungsdauer erreicht.</strong> Prüf die Warnzeichen unten – spätestens jetzt lohnt sich ein Vergleich.' : `Noch etwa <strong>${rest} Jahr${rest === 1 ? '' : 'e'}</strong> bis zum empfohlenen Austausch, wenn keine Warnzeichen auftreten.`}</p>${amazon('Jetzt auf Amazon nach einer neuen Matratze suchen', ({ kaltschaum: 'Kaltschaummatratze', visko: 'Viscoschaum Matratze', tfk: 'Taschenfederkernmatratze', latex: 'Latexmatratze', bonnell: 'Federkernmatratze', boxspring: 'Boxspring Matratze' })[$('typ').value] || 'Matratze')}${amazonHinweis}`;
   }
   bind(document.querySelector('.se-calc-form'), run);
 </script>

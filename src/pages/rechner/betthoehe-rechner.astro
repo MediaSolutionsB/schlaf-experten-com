@@ -33,14 +33,14 @@ const ZEILEN = [155, 165, 175, 185, 195];
 </Seite>
 <script>
   import { betthoehe } from '../../rechner/schlaf.js';
-  import { $, num, bind, fmt } from '../../rechner/ui.js';
+  import { $, num, bind, fmt, amazon, amazonHinweis } from '../../rechner/ui.js';
   function run() {
     const groesse = num('cm');
     if (!groesse) { $('out').innerHTML = '<p class="se-res-empty">Bitte die Körpergröße eingeben.</p>'; return; }
     const r = betthoehe({ groesse });
     $('out').innerHTML = `<div class="se-big"><strong>ca. ${r.ideal} cm</strong><span>ideale Höhe bis Oberkante Matratze</span></div>
       <ul class="se-res-list"><li><span>Geschätzte Kniekehlenhöhe</span><b>${fmt(r.knie)} cm</b></li><li><span>Komforthöhe (leichteres Aufstehen)</span><b>${r.komfortVon}–${r.komfortBis} cm</b></li></ul>
-      <p class="se-res-note">Messen: Setz dich auf einen Stuhl, Füße flach, Knie im rechten Winkel. Die Höhe von Boden bis Kniekehle plus etwa 4 cm ist deine persönliche Idealhöhe.</p>`;
+      <p class="se-res-note">Messen: Setz dich auf einen Stuhl, Füße flach, Knie im rechten Winkel. Die Höhe von Boden bis Kniekehle plus etwa 4 cm ist deine persönliche Idealhöhe.</p>${amazon('Jetzt auf Amazon nach Betten mit Komforthöhe suchen', 'Bett Komforthöhe')}${amazonHinweis}`;
   }
   bind(document.querySelector('.se-calc-form'), run);
 </script>

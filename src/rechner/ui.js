@@ -34,3 +34,10 @@ export const zahl = (id) => {
   const v = parseFloat(String(el.value).replace(/\s/g, '').replace(',', '.'));
   return Number.isFinite(v) && v >= 0 ? v : null;
 };
+/** Amazon-Suchknopf mit Partner-Tag der Seite (für das Ergebnisfeld). */
+export function amazon(text, suche) {
+  const tag = document.querySelector('[data-tag]')?.dataset.tag || '';
+  const url = `https://www.amazon.de/s?k=${encodeURIComponent(suche)}${tag ? `&tag=${encodeURIComponent(tag)}` : ''}`;
+  return `<div class="se-res-buy"><a class="se-btn" href="${url}" target="_blank" rel="nofollow sponsored noopener">${text}<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></a></div>`;
+}
+export const amazonHinweis = '<small class="se-res-buy-note">Partnerlink: Kaufst du darüber ein, erhalten wir eine kleine Provision. Dein Preis ändert sich nicht.</small>';

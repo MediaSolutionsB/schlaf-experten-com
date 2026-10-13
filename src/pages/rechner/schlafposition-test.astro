@@ -35,12 +35,12 @@ import Wahl from '../../components/Wahl.astro';
 </Seite>
 <script>
   import { schlafposition } from '../../rechner/schlaf.js';
-  import { $, radio, bind, checked } from '../../rechner/ui.js';
+  import { $, radio, bind, checked, amazon, amazonHinweis } from '../../rechner/ui.js';
   function run() {
     const beschwerden = ['nacken', 'schulter', 'ruecken'].filter((b) => checked(`b_${b}`));
     const r = schlafposition({ lage: radio('lage'), beschwerden, schnarchen: checked('schnarchen') });
     $('out').innerHTML = `<ul class="se-res-list">${r.tipps.map((t) => `<li><span>${t}</span></li>`).join('')}</ul>
-      <p class="se-res-note">Den passenden <a href="/rechner/matratzen-haertegrad-rechner/" style="color:#fff">Härtegrad</a> und die richtige <a href="/rechner/kissenhoehe-rechner/" style="color:#fff">Kissenhöhe</a> berechnest du mit unseren anderen Rechnern.</p>`;
+      <p class="se-res-note">Den passenden <a href="/rechner/matratzen-haertegrad-rechner/" style="color:#fff">Härtegrad</a> und die richtige <a href="/rechner/kissenhoehe-rechner/" style="color:#fff">Kissenhöhe</a> berechnest du mit unseren anderen Rechnern.</p>${amazon('Jetzt auf Amazon nach der passenden Matratze suchen', `Matratze${({ seite: ' Seitenschläfer', ruecken: ' Rückenschläfer', bauch: ' Bauchschläfer', wechsel: '' })[radio('lage')]}`)}${amazon('Jetzt auf Amazon nach dem passenden Kissen suchen', ({ seite: 'Seitenschläferkissen', ruecken: 'Nackenstützkissen Rückenschläfer', bauch: 'flaches Kopfkissen Bauchschläfer', wechsel: 'Kopfkissen höhenverstellbar' })[radio('lage')])}${amazonHinweis}`;
   }
   bind(document.querySelector('.se-calc-form'), run);
 </script>

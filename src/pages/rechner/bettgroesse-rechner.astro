@@ -36,7 +36,7 @@ import Wahl from '../../components/Wahl.astro';
 </Seite>
 <script>
   import { bettgroesse } from '../../rechner/schlaf.js';
-  import { $, num, radio, bind } from '../../rechner/ui.js';
+  import { $, num, radio, bind, amazon, amazonHinweis } from '../../rechner/ui.js';
   function run() {
     const personen = Number(radio('personen'));
     document.querySelectorAll('[data-personen]').forEach((el) => { el.hidden = personen !== 2; });
@@ -48,7 +48,7 @@ import Wahl from '../../components/Wahl.astro';
       <ul class="se-res-list"><li><span>Mindestlänge (Größe + 20 cm)</span><b>${r.minL} cm</b></li><li><span>Passende Standardlänge</span><b>${laenge}</b></li>
       ${r.laengeKomfort && r.laengeKomfort !== r.laenge ? `<li><span>Bequemer (Größe + 30 cm)</span><b>${r.laengeKomfort} cm</b></li>` : ''}
       <li><span>Breite: Minimum</span><b>${r.breite.min} cm</b></li><li><span>Breite: empfohlen</span><b>${r.breite.gut} cm</b></li><li><span>Breite: großzügig</span><b>${r.breite.gross} cm</b></li></ul>
-      ${r.ueberlaenge ? '<p class="se-res-note">Über 220 cm Länge brauchst du eine Matratze in Sondergröße. Viele Hersteller fertigen auf Maß.</p>' : ''}`;
+      ${r.ueberlaenge ? '<p class="se-res-note">Über 220 cm Länge brauchst du eine Matratze in Sondergröße. Viele Hersteller fertigen auf Maß.</p>' : ''}${r.laenge ? amazon(`Jetzt auf Amazon nach Matratzen ${r.breite.gut} × ${r.laenge} cm suchen`, `Matratze ${r.breite.gut}x${r.laenge}`) + amazonHinweis : ''}`;
   }
   bind(document.querySelector('.se-calc-form'), run);
 </script>

@@ -36,7 +36,7 @@ import Feld from '../../components/Feld.astro';
 </Seite>
 <script>
   import { klima } from '../../rechner/schlaf.js';
-  import { $, bind, zahl, fmt } from '../../rechner/ui.js';
+  import { $, bind, zahl, fmt, amazon, amazonHinweis } from '../../rechner/ui.js';
   const T = { kalt: ['Zu kalt', 'Unter 15 °C kühlen Wände aus. Etwas wärmer stellen.'], kuehl: ['Etwas kühl', 'Für manche angenehm, mit warmer Decke gut zum Schlafen.'], ideal: ['Ideal', 'Genau im empfohlenen Bereich von 17–20 °C.'], warm: ['Etwas warm', 'Ein bis zwei Grad kühler fördert den Schlaf.'], heiss: ['Zu warm', 'Deutlich über der Empfehlung. Tagsüber abdunkeln, nachts lüften.'] };
   const F = { trocken: ['Zu trocken', 'Unter 30 %: Schleimhäute trocknen aus. Weniger heizen, Luft befeuchten.'], 'etwas-trocken': ['Etwas trocken', 'Leicht unter dem Idealbereich. Meist unproblematisch.'], ideal: ['Ideal', 'Im empfohlenen Bereich von 40–60 %.'], feucht: ['Etwas feucht', 'Über 60 %: Häufiger stoßlüften, sonst droht Schimmel.'], nass: ['Zu feucht', 'Über 70 %: Hohe Schimmelgefahr. Unbedingt regelmäßig stoßlüften und Ursache prüfen.'] };
   function run() {
@@ -46,7 +46,7 @@ import Feld from '../../components/Feld.astro';
     const ok = r.temp === 'ideal' && r.feuchte === 'ideal';
     $('out').innerHTML = `<div class="se-big"><strong>${ok ? 'Alles im grünen Bereich' : 'Da geht noch was'}</strong><span>${fmt(tempC, 1)} °C · ${fmt(rh)} % Luftfeuchtigkeit</span></div>
       <ul class="se-res-list"><li><span>Temperatur</span><b>${T[r.temp][0]}</b></li><li><span>Luftfeuchtigkeit</span><b>${F[r.feuchte][0]}</b></li></ul>
-      <p class="se-res-note">${T[r.temp][1]}</p><p class="se-res-note">${F[r.feuchte][1]}</p>`;
+      <p class="se-res-note">${T[r.temp][1]}</p><p class="se-res-note">${F[r.feuchte][1]}</p>${amazon('Jetzt auf Amazon nach Thermo-Hygrometern suchen', 'Thermometer Hygrometer innen digital')}${amazonHinweis}`;
   }
   bind(document.querySelector('.se-calc-form'), run);
 </script>

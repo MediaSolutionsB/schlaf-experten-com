@@ -32,14 +32,14 @@ const eur = (n) => n.toLocaleString('de-DE', { style: 'currency', currency: 'EUR
 </Seite>
 <script>
   import { kostenProNacht } from '../../rechner/schlaf.js';
-  import { $, num, radio, bind, eur } from '../../rechner/ui.js';
+  import { $, num, radio, bind, eur, amazon, amazonHinweis } from '../../rechner/ui.js';
   function run() {
     const preis = num('preis'), jahre = num('jahre');
     if (!preis || !jahre) { $('out').innerHTML = '<p class="se-res-empty">Bitte Preis und Nutzungsdauer eingeben.</p>'; return; }
     const personen = Number(radio('personen'));
     const r = kostenProNacht({ preis, jahre, personen });
     $('out').innerHTML = `<div class="se-big"><strong>${eur(r.proNacht)}</strong><span>pro Nacht</span></div>
-      <ul class="se-res-list"><li><span>Pro Monat</span><b>${eur(r.proMonat)}</b></li>${personen === 2 ? `<li><span>Pro Person und Nacht</span><b>${eur(r.proPerson)}</b></li>` : ''}<li><span>Nächte insgesamt</span><b>${r.naechte.toLocaleString('de-DE')}</b></li></ul>`;
+      <ul class="se-res-list"><li><span>Pro Monat</span><b>${eur(r.proMonat)}</b></li>${personen === 2 ? `<li><span>Pro Person und Nacht</span><b>${eur(r.proPerson)}</b></li>` : ''}<li><span>Nächte insgesamt</span><b>${r.naechte.toLocaleString('de-DE')}</b></li></ul>${amazon('Jetzt auf Amazon nach der passenden Matratze suchen', 'Matratze')}${amazonHinweis}`;
   }
   bind(document.querySelector('.se-calc-form'), run);
 </script>

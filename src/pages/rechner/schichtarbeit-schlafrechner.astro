@@ -45,7 +45,7 @@ import Zeit from '../../components/Zeit.astro';
 </Seite>
 <script>
   import { schicht } from '../../rechner/schlaf.js';
-  import { $, radio, bind, zeitVon, zahl } from '../../rechner/ui.js';
+  import { $, radio, bind, zeitVon, zahl, amazon, amazonHinweis } from '../../rechner/ui.js';
   const VORGABE = { frueh: ['06:00', '14:00'], spaet: ['14:00', '22:00'], nacht: ['22:00', '06:00'] };
   let letzteArt = 'nacht';
   function run() {
@@ -57,11 +57,11 @@ import Zeit from '../../components/Zeit.astro';
     if (art === 'nacht') {
       $('out').innerHTML = `<div class="se-big"><strong>${r.bett}–${r.aufstehen}</strong><span>Hauptschlaf nach der Nachtschicht</span></div>
         <ul class="se-res-list"><li><span>Zu Hause um</span><b>${r.heim} Uhr</b></li><li><span>Vorschlaf vor der nächsten Schicht</span><b>${r.napStart}–${r.napEnde} Uhr</b></li></ul>
-        <p class="se-res-note">Vor der <strong>ersten</strong> Nachtschicht: normal schlafen, dann den Vorschlaf am frühen Abend einplanen.</p>`;
+        <p class="se-res-note">Vor der <strong>ersten</strong> Nachtschicht: normal schlafen, dann den Vorschlaf am frühen Abend einplanen.</p>${amazon('Jetzt auf Amazon nach Verdunkelungsvorhängen suchen', 'Verdunkelungsvorhang Schlafzimmer')}${amazon('Jetzt auf Amazon nach Schlafmasken suchen', 'Schlafmaske')}${amazonHinweis}`;
     } else {
       $('out').innerHTML = `<div class="se-big"><strong>${r.bett} Uhr</strong><span>ins Bett gehen</span></div>
         <ul class="se-res-list"><li><span>Aufstehen um</span><b>${r.aufstehen} Uhr</b></li></ul>
-        <p class="se-res-note">15 Minuten zum Einschlafen sind eingerechnet.</p>`;
+        <p class="se-res-note">15 Minuten zum Einschlafen sind eingerechnet.</p>${amazon('Jetzt auf Amazon nach Verdunkelungsvorhängen suchen', 'Verdunkelungsvorhang Schlafzimmer')}${amazon('Jetzt auf Amazon nach Schlafmasken suchen', 'Schlafmaske')}${amazonHinweis}`;
     }
   }
   bind(document.querySelector('.se-calc-form'), run);

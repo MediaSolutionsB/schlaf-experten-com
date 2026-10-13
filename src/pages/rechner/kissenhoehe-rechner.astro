@@ -38,14 +38,14 @@ import Wahl from '../../components/Wahl.astro';
 </Seite>
 <script>
   import { kissenhoehe } from '../../rechner/schlaf.js';
-  import { $, num, radio, bind } from '../../rechner/ui.js';
+  import { $, num, radio, bind, amazon, amazonHinweis } from '../../rechner/ui.js';
   function run() {
     const lage = radio('lage');
     const schulterCm = num('schulter');
     if (lage === 'seite' && !schulterCm) { $('out').innerHTML = '<p class="se-res-empty">Bitte den Schulterabstand eingeben.</p>'; return; }
     const r = kissenhoehe({ schulterCm: schulterCm || 14, lage, matratze: radio('matratze') });
     const text = lage === 'seite' ? 'Gemessen unter Belastung, also wenn der Kopf auf dem Kissen liegt.' : lage === 'ruecken' ? 'Eher flach, damit der Kopf nicht nach vorn kippt.' : 'Sehr flach oder ganz ohne Kissen.';
-    $('out').innerHTML = `<div class="se-big"><strong>${r.von}–${r.bis} cm</strong><span>empfohlene Kissenhöhe</span></div><p class="se-res-note">${text}</p>`;
+    $('out').innerHTML = `<div class="se-big"><strong>${r.von}–${r.bis} cm</strong><span>empfohlene Kissenhöhe</span></div><p class="se-res-note">${text}</p>${amazon('Jetzt auf Amazon nach dem passenden Kissen suchen', ({ seite: 'Seitenschläferkissen höhenverstellbar', ruecken: 'Nackenstützkissen Rückenschläfer', bauch: 'flaches Kopfkissen Bauchschläfer' })[lage])}${amazonHinweis}`;
   }
   bind(document.querySelector('.se-calc-form'), run);
 </script>

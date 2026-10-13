@@ -38,7 +38,7 @@ import Wahl from '../../components/Wahl.astro';
 </Seite>
 <script>
   import { bettdecke } from '../../rechner/schlaf.js';
-  import { $, num, radio, bind, zahl } from '../../rechner/ui.js';
+  import { $, num, radio, bind, zahl, amazon, amazonHinweis } from '../../rechner/ui.js';
   const NAME = { 1: 'sehr leicht', 2: 'leicht', 3: 'mittel', 4: 'warm', 5: 'extra warm' };
   function run() {
     const raumC = zahl('temp');
@@ -46,7 +46,7 @@ import Wahl from '../../components/Wahl.astro';
     const r = bettdecke({ raumC, typ: radio('typ'), groesse: num('cm') || 175, personen: Number(radio('personen')) });
     $('out').innerHTML = `<div class="se-big"><strong>Wärmeklasse ${r.klasse}</strong><span>${NAME[r.klasse]}</span></div>
       <ul class="se-res-list">${r.groessen.map((g, i) => `<li><span>${i === 0 ? 'Empfohlene Größe' : 'Alternative'}</span><b>${g}</b></li>`).join('')}</ul>
-      ${raumC > 20 ? '<p class="se-res-note">Dein Schlafzimmer ist wärmer als die empfohlenen 17–20 °C. Kühler schläft es sich meist besser.</p>' : ''}`;
+      ${raumC > 20 ? '<p class="se-res-note">Dein Schlafzimmer ist wärmer als die empfohlenen 17–20 °C. Kühler schläft es sich meist besser.</p>' : ''}${amazon('Jetzt auf Amazon nach der passenden Bettdecke suchen', `Bettdecke 135x${r.laenge} ${r.klasse <= 2 ? 'leicht Sommer' : r.klasse >= 4 ? 'warm Winter' : 'Ganzjahresdecke'}`)}${amazonHinweis}`;
   }
   bind(document.querySelector('.se-calc-form'), run);
 </script>

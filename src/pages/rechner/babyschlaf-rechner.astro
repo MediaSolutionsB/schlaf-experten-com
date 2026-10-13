@@ -36,7 +36,7 @@ const mm = (m) => (m >= 60 ? `${(m / 60).toLocaleString('de-DE', { maximumFracti
 </Seite>
 <script>
   import { babyschlaf } from '../../rechner/schlaf.js';
-  import { $, bind, zeitVon, zahl, fmt } from '../../rechner/ui.js';
+  import { $, bind, zeitVon, zahl, fmt, amazon, amazonHinweis } from '../../rechner/ui.js';
   const mm = (m) => (m >= 60 ? `${fmt(m / 60, 2)} Std.` : `${m} Min.`);
   function run() {
     const monate = zahl('monate'), auf = zeitVon('auf');
@@ -45,10 +45,10 @@ const mm = (m) => (m >= 60 ? `${(m / 60).toLocaleString('de-DE', { maximumFracti
     const r = babyschlaf({ monate, aufwachen: auf });
     const kopf = `<div class="se-big"><strong>${r.nsf.empfohlen[0]}–${r.nsf.empfohlen[1]} Std.</strong><span>empfohlener Schlaf pro Tag (inkl. Nickerchen)</span></div>
       <ul class="se-res-list"><li><span>Typisches Wachfenster</span><b>${mm(r.band.wach[0])}–${mm(r.band.wach[1])}</b></li>`;
-    if (!r.plan) { $('out').innerHTML = kopf + '</ul><p class="se-res-note">In den ersten Wochen schlafen Babys noch ohne festen Tag-Nacht-Rhythmus, rund um die Uhr in kurzen Abschnitten. Ein Tagesplan ergibt noch keinen Sinn.</p>'; return; }
+    if (!r.plan) { $('out').innerHTML = kopf + '</ul><p class="se-res-note">In den ersten Wochen schlafen Babys noch ohne festen Tag-Nacht-Rhythmus, rund um die Uhr in kurzen Abschnitten. Ein Tagesplan ergibt noch keinen Sinn.</p>' + amazon('Jetzt auf Amazon nach Babyschlafsäcken suchen', 'Babyschlafsack') + amazonHinweis; return; }
     $('out').innerHTML = kopf + `<li><span>Nickerchen am Tag</span><b>${r.band.naps}</b></li></ul>
       <ul class="se-res-list">${r.plan.map((p) => `<li><span>${p.was}</span><b>${p.zeit}${p.bis ? `–${p.bis}` : ''} Uhr</b></li>`).join('')}</ul>
-      <p class="se-res-note">Beispiel mit mittleren Werten: ${fmt(r.tagschlafH, 2)} Std. Tagschlaf + ${fmt(r.nachtH, 1)} Std. Nacht (inkl. nächtlicher Wachphasen). Passe den Plan an die Müdigkeitszeichen deines Kindes an.</p>`;
+      <p class="se-res-note">Beispiel mit mittleren Werten: ${fmt(r.tagschlafH, 2)} Std. Tagschlaf + ${fmt(r.nachtH, 1)} Std. Nacht (inkl. nächtlicher Wachphasen). Passe den Plan an die Müdigkeitszeichen deines Kindes an.</p>${amazon('Jetzt auf Amazon nach Babyschlafsäcken suchen', 'Babyschlafsack')}${amazonHinweis}`;
   }
   bind(document.querySelector('.se-calc-form'), run);
 </script>

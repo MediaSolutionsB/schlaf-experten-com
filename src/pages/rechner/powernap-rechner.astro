@@ -40,14 +40,14 @@ import Zeit from '../../components/Zeit.astro';
 </Seite>
 <script>
   import { powernap } from '../../rechner/schlaf.js';
-  import { $, radio, bind, zeitVon, zahl } from '../../rechner/ui.js';
+  import { $, radio, bind, zeitVon, zahl, amazon, amazonHinweis } from '../../rechner/ui.js';
   function run() {
     const start = zeitVon('start');
     if (start === null) { $('out').innerHTML = '<p class="se-res-empty">Bitte eine Uhrzeit eingeben.</p>'; return; }
     const r = powernap({ start, art: radio('art'), einschlafMin: zahl('sol') ?? 10 });
     $('out').innerHTML = `<div class="se-big"><strong>${r.wecker} Uhr</strong><span>Wecker stellen auf</span></div>
       <ul class="se-res-list"><li><span>Schlafzeit</span><b>${r.schlafMin} Minuten</b></li><li><span>Zeit im Liegen insgesamt</span><b>${r.liegeMin} Minuten</b></li></ul>
-      ${r.spaet ? '<p class="se-res-note"><strong>Hinweis:</strong> Ein Nickerchen ab etwa 15 Uhr kann das Einschlafen am Abend erschweren.</p>' : ''}`;
+      ${r.spaet ? '<p class="se-res-note"><strong>Hinweis:</strong> Ein Nickerchen ab etwa 15 Uhr kann das Einschlafen am Abend erschweren.</p>' : ''}${amazon('Jetzt auf Amazon nach Schlafmasken suchen', 'Schlafmaske')}${amazonHinweis}`;
   }
   bind(document.querySelector('.se-calc-form'), run);
 </script>

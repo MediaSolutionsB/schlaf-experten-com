@@ -44,7 +44,7 @@ import Wahl from '../../components/Wahl.astro';
 </Seite>
 <script>
   import { haertegrad } from '../../rechner/schlaf.js';
-  import { $, num, radio, bind, fmt } from '../../rechner/ui.js';
+  import { $, num, radio, bind, fmt, amazon, amazonHinweis } from '../../rechner/ui.js';
   const NAME = { 1: 'sehr weich', 2: 'weich bis mittel', 3: 'mittel bis fest', 4: 'fest', 5: 'sehr fest' };
   function run() {
     const gewicht = num('kg'), groesse = num('cm'), lage = radio('lage');
@@ -58,7 +58,7 @@ import Wahl from '../../components/Wahl.astro';
     $('out').innerHTML = `<div class="se-big"><strong>H${r.h}</strong><span>${NAME[r.h]}</span></div>
       <ul class="se-res-list"><li><span>Nach Körpergewicht</span><b>H${r.basis}</b></li>${r.bmi ? `<li><span>Body-Mass-Index</span><b>${fmt(r.bmi, 1)}</b></li>` : ''}</ul>
       ${hinweise.map((h) => `<p class="se-res-note">${h}</p>`).join('')}
-      <p class="se-res-note">Härtegrade sind nicht genormt. Vergleiche immer mit den Angaben des jeweiligen Herstellers.</p>`;
+      <p class="se-res-note">Härtegrade sind nicht genormt. Vergleiche immer mit den Angaben des jeweiligen Herstellers.</p>${amazon(`Jetzt auf Amazon nach Matratzen in H${r.h} suchen`, `Matratze H${r.h}${({ seite: ' Seitenschläfer', ruecken: ' Rückenschläfer', bauch: ' Bauchschläfer', wechsel: '' })[lage]}`)}${amazonHinweis}`;
   }
   bind(document.querySelector('.se-calc-form'), run);
 </script>
